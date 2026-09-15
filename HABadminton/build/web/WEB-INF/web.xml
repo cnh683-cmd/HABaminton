@@ -1,40 +1,38 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <web-app version="6.0" xmlns="https://jakarta.ee/xml/ns/jakartaee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="https://jakarta.ee/xml/ns/jakartaee https://jakarta.ee/xml/ns/jakartaee/web-app_6_0.xsd">
-    
     <!-- KHAI BÁO SERVLET -->
     <servlet>
         <servlet-name>ProcessCheckoutServlet</servlet-name>
-        <servlet-class>controller.ProcessCheckoutServlet</servlet-class>
+        <servlet-class>controller.User.ProcessCheckoutServlet</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>OrderServlet</servlet-name>
-        <servlet-class>controller.OrderServlet</servlet-class>
+        <servlet-class>controller.User.OrderServlet</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>OrderDetailServlet</servlet-name>
-        <servlet-class>controller.OrderDetailServlet</servlet-class>
+        <servlet-class>controller.User.OrderDetailServlet</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>MoMoReturnServlet</servlet-name>
-        <servlet-class>controller.MoMoReturnServlet</servlet-class>
+        <servlet-class>controller.User.MoMoReturnServlet</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>RegisterServlet</servlet-name>
-        <servlet-class>controller.RegisterServlet</servlet-class>
+        <servlet-class>controller.User.RegisterServlet</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>LoginServlet</servlet-name>
-        <servlet-class>controller.LoginServlet</servlet-class>
+        <servlet-class>controller.User.LoginServlet</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>LogoutServlet</servlet-name>
-        <servlet-class>controller.LogoutServlet</servlet-class>
+        <servlet-class>controller.User.LogoutServlet</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>UpdateProfileServlet</servlet-name>
-        <servlet-class>controller.UpdateProfileServlet</servlet-class>
+        <servlet-class>controller.User.UpdateProfileServlet</servlet-class>
     </servlet>
-
     <!-- MAP ĐƯỜNG DẪN (URL-PATTERN) -->
     <servlet-mapping>
         <servlet-name>ProcessCheckoutServlet</servlet-name>
@@ -68,7 +66,6 @@
         <servlet-name>UpdateProfileServlet</servlet-name>
         <url-pattern>/UpdateProfileServlet</url-pattern>
     </servlet-mapping>
-
     <welcome-file-list>
         <welcome-file>index.jsp</welcome-file>
     </welcome-file-list>

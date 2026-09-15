@@ -13,21 +13,19 @@
     <jsp:include page="header.jsp"></jsp:include>
 
     <div class="result-page">
-        <!-- 1. ĐÃ FIX VIỀN TRÊN: Chỉ chuyển viền đỏ nếu là MOMO và trạng thái = 1 (Bị hủy) -->
-        <div class="invoice-box" style="border-top: 5px solid ${(order.phuongThucThanhToan == 'MOMO' and order.trangThai == 1) ? '#dc3545' : '#28a745'};">
+        <!-- ĐÃ FIX: Dùng biến isSuccess để đổi màu viền -->
+        <div class="invoice-box" style="border-top: 5px solid ${(order.phuongThucThanhToan == 'MOMO' and isSuccess == false) ? '#dc3545' : '#28a745'};">
             
             <c:choose>
-                <c:when test="${order.phuongThucThanhToan == 'MOMO' and order.trangThai == 2}">
-                    <!-- Đã thanh toán -->
+                <c:when test="${order.phuongThucThanhToan == 'MOMO' and isSuccess == true}">
                     <div style="background-color: #28a745; color: #fff; width: 64px; height: 64px; border-radius: 50%; text-align: center; line-height: 64px; margin: 0 auto 20px auto; font-size: 32px; padding: 0;">
                         <i class="fa-solid fa-check" style="margin: 0;"></i>
                     </div>
-                    <h2>Đặt hàng & Thanh toán thành công!</h2>
+                    <h2>Thanh toán thành công!</h2>
                     <p class="thank-you">Cảm ơn bạn đã mua sắm tại HA Badminton. Đơn hàng của bạn đang được xử lý.</p>
                 </c:when>
                 
-                <c:when test="${order.phuongThucThanhToan == 'MOMO' and order.trangThai == 1}">
-                    <!-- Hủy thanh toán -->
+                <c:when test="${order.phuongThucThanhToan == 'MOMO' and isSuccess == false}">
                     <div style="background-color: #dc3545; color: #fff; width: 64px; height: 64px; border-radius: 50%; text-align: center; line-height: 64px; margin: 0 auto 20px auto; font-size: 32px; padding: 0;">
                         <i class="fa-solid fa-xmark" style="margin: 0;"></i>
                     </div>
@@ -36,7 +34,6 @@
                 </c:when>
                 
                 <c:otherwise>
-                    <!-- Tiền mặt COD -->
                     <div style="background-color: #28a745; color: #fff; width: 64px; height: 64px; border-radius: 50%; text-align: center; line-height: 64px; margin: 0 auto 20px auto; font-size: 32px; padding: 0;">
                         <i class="fa-solid fa-check" style="margin: 0;"></i>
                     </div>
@@ -71,10 +68,10 @@
                     
                     <div style="width: 100%; text-align: right; font-size: 13px; font-weight: bold;">
                         <c:choose>
-                            <c:when test="${order.phuongThucThanhToan == 'MOMO' and order.trangThai == 2}">
+                            <c:when test="${order.phuongThucThanhToan == 'MOMO' and isSuccess == true}">
                                 <span style="color: #28a745;">✔ đã thanh toán</span>
                             </c:when>
-                            <c:when test="${order.phuongThucThanhToan == 'MOMO' and order.trangThai == 1}">
+                            <c:when test="${order.phuongThucThanhToan == 'MOMO' and isSuccess == false}">
                                 <span style="color: #dc3545;">x thanh toán thất bại</span>
                             </c:when>
                             <c:otherwise>
@@ -90,12 +87,10 @@
                     <i class="fa-solid fa-box-open"></i> Sản phẩm đã mua
                 </h4>
                 
-                <!-- TÍNH TOÁN TỔNG TIỀN GỐC (SUBTOTAL) CỦA SẢN PHẨM -->
                 <c:set var="subTotal" value="0" />
                 
                 <div class="order-products-list" style="margin-top: 0; padding-top: 0; border: none;">
                     <c:forEach items="${order.chiTietList}" var="item">
-                        <!-- Cộng dồn tiền gốc -->
                         <c:set var="subTotal" value="${subTotal + (item.giaMua * item.soLuong)}" />
                         
                         <div class="product-item-row" style="padding: 10px 0; background: transparent; border-bottom: 1px dashed #eee; border-radius: 0; display: flex; align-items: center;">
@@ -111,9 +106,7 @@
                     </c:forEach>
                 </div>
 
-                <!-- 2. HIỂN THỊ VOUCHER VÀ SỐ TIỀN GIẢM -->
                 <c:if test="${not empty order.maVoucher}">
-                    <!-- Tự động tính số tiền đã được giảm -->
                     <c:set var="discountAmount" value="${subTotal - order.tongTien}" />
                     
                     <div class="invoice-divider"></div>
@@ -137,7 +130,7 @@
             </div>
 
             <div class="action-links">
-                <c:if test="${not (order.phuongThucThanhToan == 'MOMO' and order.trangThai == 1)}">
+                <c:if test="${not (order.phuongThucThanhToan == 'MOMO' and isSuccess == false)}">
                     <a href="order-detail?id=${order.maDonHang}" style="border: 1px solid #ff6600; color: #ff6600; background: #fff;">THEO DÕI ĐƠN HÀNG</a>
                 </c:if>
                 <a href="index.jsp" style="background: #ff6600; color: #fff; border: 1px solid #ff6600;">TIẾP TỤC MUA SẮM</a>
@@ -146,10 +139,15 @@
     </div>
     
     <script>
-        localStorage.removeItem('habadminton_cart');
-        if (typeof renderCart === 'function') {
-            cart = [];
-            renderCart(); 
+        // ĐÃ FIX: Chỉ xóa bộ nhớ tạm nếu khách Mua Ngay, còn không thì xóa giỏ hàng
+        if (sessionStorage.getItem('habadminton_buynow')) {
+            sessionStorage.removeItem('habadminton_buynow');
+        } else {
+            localStorage.removeItem('habadminton_cart');
+            if (typeof renderCart === 'function') {
+                cart = [];
+                renderCart(); 
+            }
         }
     </script>
     <jsp:include page="footer.jsp"></jsp:include>

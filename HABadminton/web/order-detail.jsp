@@ -77,9 +77,23 @@
                 <div class="od-payment-info">
                     <p class="od-pay-title">Thông tin thanh toán</p>
                     <p class="od-pay-method">${order.phuongThucThanhToan == 'MOMO' ? 'Ví MoMo' : 'Tiền mặt (COD)'}</p>
-                    <p class="od-pay-status ${order.trangThai >= 2 ? 'text-green' : 'text-red'}">
-                        ${order.trangThai >= 2 ? '✔ Đã thanh toán' : 'x Chưa thanh toán'}
-                    </p>
+                    
+                    <c:choose>
+                        <%-- Nếu là MOMO: Mặc định luôn là Đã thanh toán --%>
+                        <c:when test="${order.phuongThucThanhToan == 'MOMO'}">
+                            <p class="od-pay-status text-green">✔ Đã thanh toán (MoMo)</p>
+                        </c:when>
+                        
+                        <%-- Nếu là COD và Trạng thái = 4 (Đã giao): Đã thu tiền --%>
+                        <c:when test="${order.phuongThucThanhToan == 'COD' and order.trangThai == 4}">
+                            <p class="od-pay-status text-green">✔ Đã thu tiền mặt (COD)</p>
+                        </c:when>
+                        
+                        <%-- Các trường hợp còn lại của COD: Chưa thanh toán --%>
+                        <c:otherwise>
+                            <p class="od-pay-status text-red">x Chưa thanh toán</p>
+                        </c:otherwise>
+                    </c:choose>
                 </div>
             </div>
 
@@ -108,18 +122,40 @@
 
                 <!-- Lời nhắc & Nút -->
                 <div class="od-action-box">
-                    <div class="od-delivery-est">
-                        Dự kiến giao hàng vào khoảng 3-5 ngày tới
-                    </div>
-                    <div class="od-buttons">
-                        <button class="btn-purple">Đã nhận được hàng</button>
-                        <button class="btn-outline">Yêu cầu Trả hàng / Hoàn tiền</button>
-                    </div>
-                    <p class="od-confirm-text">Vui lòng chỉ ấn "Đã nhận được hàng" khi đơn hàng đã được giao đến bạn và sản phẩm không có vấn đề nào.</p>
+                    <c:choose>
+                        <%-- CHỈ HIỂN THỊ NÚT HỦY KHI TRẠNG THÁI = 1 (Chờ xác nhận) --%>
+                        <c:when test="${order.trangThai == 1}">
+                            <button class="btn-outline" style="color: #dc3545; border-color: #dc3545; padding: 10px 30px; font-weight: 600; border-radius: 6px; cursor: pointer;" onclick="cancelOrderUser('${order.maDonHang}')">
+                                <i class="fa-solid fa-ban"></i> Hủy đơn hàng
+                            </button>
+                            <p class="od-confirm-text" style="margin-top: 10px;">Bạn chỉ có thể hủy khi đơn hàng ở trạng thái Chờ xác nhận.</p>
+                        </c:when>
+                        
+                        <%-- KHI ĐƠN BỊ HỦY (TRẠNG THÁI = 0), HIỂN THỊ LÝ DO --%>
+                        <c:when test="${order.trangThai == 0}">
+                            <div style="padding: 15px; background: #fff5f5; border: 1px dashed #dc3545; border-radius: 8px; color: #dc3545; text-align: left;">
+                                <h4 style="margin: 0 0 5px 0;"><i class="fa-solid fa-circle-exclamation"></i> Đơn hàng đã bị hủy</h4>
+                                <p style="margin: 0; font-size: 14px;"><strong>Lý do:</strong> ${not empty order.lyDoHuy ? order.lyDoHuy : 'Không có lý do cụ thể'}</p>
+                            </div>
+                        </c:when>
+                    </c:choose>
                 </div>
                 
+                <!-- JS Xử lý nhập lý do cho User -->
+                <script>
+                    function cancelOrderUser(id) {
+                        let reason = prompt("Nhập lý do bạn muốn hủy đơn hàng này:");
+                        
+                        if (reason != null && reason.trim() !== "") {
+                            window.location.href = "cancel-order?id=" + id + "&reason=" + encodeURIComponent(reason) + "&from=user";
+                        } else if (reason != null) {
+                            alert("Bạn phải nhập lý do mới có thể hủy đơn!");
+                        }
+                    }
+                </script>
+                
                 <!-- Dải viền màu -->
-                <div class="od-mail-border"></div>
+                <div class="od-mail-border" style="margin-top: 30px;"></div>
 
                 <!-- Thông tin & Timeline -->
                 <div class="od-bottom-split">

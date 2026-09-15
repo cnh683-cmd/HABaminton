@@ -6,19 +6,25 @@
 <%@ page import="java.util.List" %>
 
 <%
-    // Tự động đếm số lượng đơn hàng của User đang đăng nhập
     int countOrders = 0;
-    User u = (User) session.getAttribute("user");
+    boolean hasNewUpdate = false;
+    model.User u = (model.User) session.getAttribute("user");
     if (u != null) {
-        OrderDAO oDao = new OrderDAO();
-        List<Order> listO = oDao.getOrdersByEmail(u.getEmail());
+        dal.OrderDAO oDao = new dal.OrderDAO();
+        java.util.List<model.Order> listO = oDao.getOrdersByEmail(u.getEmail());
         if (listO != null) {
             countOrders = listO.size();
+            for(model.Order o : listO) {
+                if(o.getUserDaXem() == 0) {
+                    hasNewUpdate = true; // Phát hiện có đơn chưa xem
+                    break;
+                }
+            }
         }
     }
     pageContext.setAttribute("countOrders", countOrders);
+    pageContext.setAttribute("hasNewUpdate", hasNewUpdate);
 %>
-
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 <header class="main-header">
     <div class="container header-container">
@@ -150,12 +156,12 @@
         </nav>
         
         <!-- Nút Đăng nhập, Hồ sơ & Giỏ hàng -->
-        <div class="user-actions" style="display: flex; align-items: center; gap: 20px;">
+        <div class="user-actions header-icons">
             <c:choose>
                 <c:when test="${not empty sessionScope.user}">
                     <div class="user-menu-wrap" style="padding: 10px 0;">
-                        <a href="#" class="login-btn">
-                            <i class="fa-regular fa-user" style="font-size: 20px; color: #ff6600; border: 1px solid #ff6600; border-radius: 50%; padding: 8px;"></i>
+                        <a href="#" class="icon-circle">
+                            <i class="fa-regular fa-user"></i>
                         </a>
                         
                         <div class="user-dropdown">
@@ -167,24 +173,25 @@
                     </div>
                 </c:when>
                 <c:otherwise>
-                    <a href="login.jsp" class="login-btn">
-                        <i class="fa-regular fa-user" style="font-size: 20px; color: #555; border: 1px solid #ddd; border-radius: 50%; padding: 8px;"></i>
+                    <a href="login.jsp" class="icon-circle">
+                        <i class="fa-regular fa-user"></i>
                     </a>
                 </c:otherwise>
             </c:choose>
             
-            <!-- Đã sửa href thành "orders" và thêm hiển thị chấm đỏ -->
-            <div class="order-icon-wrapper" onclick="window.location.href='orders'" style="position: relative; cursor: pointer;">
-                <i class="fa-solid fa-clipboard-list" style="font-size: 20px; color: #ff6600; border: 1px solid #ff6600; border-radius: 50%; padding: 8px;"></i>
-                <c:if test="${countOrders > 0}">
-                    <span class="cart-badge">${countOrders}</span>
+            <!-- Icon Đơn hàng (Kèm chấm nhấp nháy nếu có thông báo) -->
+            <a href="orders" class="icon-circle">
+                <i class="fa-solid fa-clipboard-list"></i>
+                <c:if test="${hasNewUpdate}"> 
+                    <div class="notify-dot"></div>
                 </c:if>
-            </div>
+            </a>
             
-            <div class="cart-icon-wrapper" onclick="toggleCartSidebar()" style="position: relative; cursor: pointer;">
-                <i class="fa-solid fa-cart-shopping" style="font-size: 20px; color: #ff6600; border: 1px solid #ff6600; border-radius: 50%; padding: 8px;"></i>
+            <!-- Icon Giỏ hàng (Kèm số đếm như cũ) -->
+            <a href="#" class="icon-circle" onclick="toggleCartSidebar()">
+                <i class="fa-solid fa-cart-shopping"></i>
                 <span class="cart-badge" id="cartBadge"></span>
-            </div>
+            </a>
         </div>
 
         <div class="cart-toast" id="cartToast">
@@ -212,7 +219,6 @@
                     <span class="total-price" id="cartTotalAmount">0đ</span>
                 </div>
                 <div class="cart-buttons">
-                    <a href="cart.jsp" class="btn-outline">Xem giỏ hàng</a>
                     <a href="checkout.jsp" class="btn-solid">Đặt mua</a>
                 </div>
             </div>

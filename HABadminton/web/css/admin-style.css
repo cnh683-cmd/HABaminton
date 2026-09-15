@@ -1,0 +1,339 @@
+/* =========================================
+   PREMIUM DARK LUXURY - AMBIENT GRADIENT
+   ========================================= */
+:root {
+    /* Bảng màu Charcoal Black & Rose Copper */
+    --carbon-dark: #0a0a0c;       
+    --carbon-light: rgba(18, 18, 21, 0.7); /* Chỉnh nền card hơi trong suốt để thấy được Ambient Gradient */
+    --carbon-input: rgba(23, 23, 26, 0.8);      
+    --border-thin: rgba(255, 255, 255, 0.05); /* Viền kính mờ */
+    
+    --rose-copper: #b76e79;       
+    --rose-copper-hover: #c9858f;
+    
+    --text-ivory: #e8e8e6;        
+    --text-silver: #8c8c94;       
+}
+
+body {
+    margin: 0;
+    font-family: 'Segoe UI', Arial, sans-serif;
+    background-color: var(--carbon-dark);
+    color: var(--text-ivory);
+    display: flex;
+    height: 100vh;
+    overflow: hidden;
+}
+
+/* ================== LEFT MENU ================== */
+.admin-sidebar {
+    width: 260px;
+    background-color: #0d0d10; /* Đen than đặc để phân tách với vùng làm việc */
+    border-right: 1px solid var(--border-thin);
+    display: flex;
+    flex-direction: column;
+    z-index: 10;
+    box-shadow: 2px 0 15px rgba(0, 0, 0, 0.5);
+}
+.sidebar-logo {
+    padding: 25px 20px;
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--rose-copper);
+    border-bottom: 1px solid var(--border-thin);
+    text-align: center;
+    letter-spacing: 2px;
+}
+.sidebar-menu {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+.sidebar-menu li a {
+    display: block;
+    padding: 16px 25px;
+    color: var(--text-silver);
+    text-decoration: none;
+    font-size: 14px;
+    border-left: 3px solid transparent;
+    transition: all 0.3s ease;
+}
+.sidebar-menu li a:hover, 
+.sidebar-menu li a.active {
+    color: var(--rose-copper);
+    background: linear-gradient(90deg, rgba(183, 110, 121, 0.1) 0%, transparent 100%);
+    border-left: 3px solid var(--rose-copper);
+}
+.sidebar-menu li a i { margin-right: 12px; width: 20px; text-align: center; }
+
+/* ================== RIGHT CONTENT ================== */
+.admin-main {
+    flex: 1;
+    overflow-y: auto;
+    padding: 35px 40px;
+    /* DARK AMBIENT GRADIENT - Kết hợp dải màu Charcoal Black và ánh sáng mờ Rose Copper */
+    background: 
+        radial-gradient(circle at 10% 5%, rgba(183, 110, 121, 0.15) 0%, transparent 40%),
+        radial-gradient(circle at 90% 95%, rgba(183, 110, 121, 0.1) 0%, transparent 45%),
+        linear-gradient(135deg, #141418 0%, #0a0a0c 100%);
+}
+.admin-page-title {
+    margin-top: 0;
+    color: var(--text-ivory);
+    margin-bottom: 30px;
+    font-weight: 600;
+    font-size: 24px;
+    letter-spacing: 0.5px;
+}
+
+/* Bộ lọc (Filter) */
+.filter-bar {
+    background-color: var(--carbon-light);
+    backdrop-filter: blur(10px); /* Hiệu ứng kính mờ Glassmorphism */
+    padding: 18px 20px;
+    border-radius: 12px;
+    display: flex;
+    gap: 15px;
+    margin-bottom: 25px;
+    border: 1px solid var(--border-thin);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+}
+.filter-input, .filter-select {
+    background-color: var(--carbon-input);
+    color: var(--text-ivory);
+    padding: 10px 16px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    outline: none;
+    transition: 0.3s;
+    font-family: inherit;
+}
+.filter-input::placeholder { color: var(--text-silver); }
+.filter-input:focus, .filter-select:focus {
+    border-color: var(--rose-copper);
+    box-shadow: 0 0 0 3px rgba(183, 110, 121, 0.15);
+}
+.filter-input { flex: 1; }
+.filter-select { min-width: 200px; }
+.filter-select option { background-color: #121215; color: var(--text-ivory); }
+
+.btn-search {
+    background-color: var(--rose-copper);
+    color: #111; 
+    border: none;
+    padding: 10px 24px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: 0.3s;
+}
+.btn-search:hover { background-color: var(--rose-copper-hover); box-shadow: 0 0 15px rgba(183, 110, 121, 0.4); }
+
+.btn-reset {
+    background-color: transparent;
+    color: var(--text-silver);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 10px 20px;
+    border-radius: 8px;
+    cursor: pointer;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: 0.3s;
+}
+.btn-reset:hover { 
+    color: var(--text-ivory); 
+    border-color: var(--rose-copper); 
+    background-color: rgba(183, 110, 121, 0.05);
+}
+
+/* ================== ORDER CARD ================== */
+.ad-order-card {
+    background-color: var(--carbon-light);
+    backdrop-filter: blur(10px);
+    border: 1px solid var(--border-thin);
+    border-radius: 12px;
+    margin-bottom: 25px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+    transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;
+}
+.ad-order-card:hover {
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
+    border-color: rgba(183, 110, 121, 0.4);
+}
+
+/* Header Card */
+.ad-oc-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 18px 24px;
+    border-bottom: 1px solid var(--border-thin);
+}
+.ad-oc-id {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--text-ivory);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+.ad-oc-id i { color: var(--rose-copper); text-shadow: 0 0 8px rgba(183, 110, 121, 0.5); }
+.ad-oc-time {
+    font-size: 13px;
+    color: var(--text-silver);
+    margin-top: 6px;
+}
+.ad-oc-actions {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+}
+.ad-oc-price {
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--rose-copper);
+}
+
+/* Status Select trong Header */
+.status-select {
+    background-color: var(--carbon-input);
+    padding: 8px 12px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 6px;
+    color: var(--text-ivory);
+    font-weight: 500;
+    outline: none;
+    cursor: pointer;
+    transition: 0.3s;
+}
+.status-select:focus, .status-select:hover {
+    border-color: var(--rose-copper);
+    box-shadow: 0 0 8px rgba(183, 110, 121, 0.2);
+}
+.status-select option { background-color: #121215; }
+
+/* Nút xóa */
+.btn-delete {
+    background-color: transparent;
+    color: var(--text-silver);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    width: 38px;
+    height: 38px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: 0.3s;
+}
+.btn-delete:hover {
+    background-color: rgba(183, 110, 121, 0.1);
+    color: var(--rose-copper);
+    border-color: var(--rose-copper);
+}
+
+/* Body Card - 3 Columns */
+.ad-oc-body {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 25px;
+    padding: 24px;
+}
+.ad-col-title {
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--text-silver);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 18px;
+    border-bottom: 1px solid var(--border-thin);
+    padding-bottom: 8px;
+}
+
+/* Col 1: Products */
+.ad-product-item {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 15px;
+}
+.ad-product-item img {
+    width: 60px;
+    height: 60px;
+    object-fit: contain;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    background-color: #0a0a0c;
+    border-radius: 8px;
+}
+.ad-prod-info h4 {
+    margin: 0 0 5px 0;
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--text-ivory);
+}
+.ad-prod-info p {
+    margin: 0;
+    font-size: 13px;
+    color: var(--text-silver);
+}
+.ad-prod-info .prod-price {
+    color: var(--rose-copper);
+    font-weight: 600;
+    margin-top: 4px;
+    display: block;
+}
+
+/* Col 2: Customer */
+.ad-cust-info {
+    display: grid;
+    grid-template-columns: 45px 1fr;
+    gap: 10px;
+    font-size: 14px;
+    margin-bottom: 18px;
+    color: var(--text-ivory);
+}
+.ad-cust-info span:first-child { color: var(--text-silver); }
+.ad-note-box {
+    background-color: rgba(0, 0, 0, 0.2);
+    border: 1px dashed rgba(255, 255, 255, 0.1);
+    padding: 12px;
+    font-size: 13px;
+    color: var(--text-silver);
+    font-style: italic;
+    border-radius: 8px;
+}
+
+/* Col 3: Payment */
+.ad-pay-info {
+    display: flex;
+    justify-content: space-between;
+    font-size: 14px;
+    margin-bottom: 12px;
+    color: var(--text-ivory);
+}
+.ad-pay-info span:first-child { color: var(--text-silver); }
+
+.pay-status {
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+    display: inline-block;
+    margin-top: 10px;
+    letter-spacing: 0.5px;
+}
+.pay-success {
+    background-color: rgba(46, 125, 50, 0.15);
+    color: #81c784;
+    border: 1px solid rgba(129, 199, 132, 0.2);
+}
+.pay-pending {
+    background-color: rgba(183, 110, 121, 0.1);
+    color: var(--rose-copper);
+    border: 1px solid rgba(183, 110, 121, 0.2);
+}
+
+.empty-msg {
+    text-align: center;
+    color: var(--text-silver);
+    margin-top: 60px;
+    font-size: 15px;
+}

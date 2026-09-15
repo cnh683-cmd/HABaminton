@@ -7,6 +7,7 @@ public class User {
     private String diaChi;
     private String quanHuyen;
     private String tinhThanh;
+    private int role;
 
     public User() {
     }
@@ -32,4 +33,6 @@ public class User {
     public void setQuanHuyen(String quanHuyen) { this.quanHuyen = quanHuyen; }
     public String getTinhThanh() { return tinhThanh; }
     public void setTinhThanh(String tinhThanh) { this.tinhThanh = tinhThanh; }
+    public int getRole() { return role; }
+    public void setRole(int role) { this.role = role; }
 }

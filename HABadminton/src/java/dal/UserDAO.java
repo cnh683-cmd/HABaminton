@@ -8,7 +8,7 @@ public class UserDAO extends DBContext {
     
     // Đăng ký tài khoản mới
     public boolean registerUser(String fullname, String email, String password) {
-        String sql = "INSERT INTO NguoiDung (HoTen, Email, MatKhau) VALUES (?, ?, ?)";
+        String sql = "INSERT INTO TAIKHOAN (HoTen, Email, MatKhau) VALUES (?, ?, ?)";
         try {
             PreparedStatement st = connection.prepareStatement(sql);
             st.setString(1, fullname);
@@ -24,14 +24,16 @@ public class UserDAO extends DBContext {
 
     // Kiểm tra đăng nhập
     public User checkLogin(String email, String password) {
-        String sql = "SELECT * FROM NguoiDung WHERE Email = ? AND MatKhau = ?";
+        String sql = "SELECT * FROM TAIKHOAN WHERE Email = ? AND MatKhau = ?";
         try {
             PreparedStatement st = connection.prepareStatement(sql);
             st.setString(1, email);
             st.setString(2, password);
             ResultSet rs = st.executeQuery();
+            
             if (rs.next()) {
-                return new User(
+                // 1. Tạo đối tượng User trước
+                User user = new User(
                     rs.getString("HoTen"),
                     rs.getString("Email"),
                     rs.getString("SDT"),
@@ -39,6 +41,12 @@ public class UserDAO extends DBContext {
                     rs.getString("QuanHuyen"),
                     rs.getString("TinhThanh")
                 );
+                
+                // 2. Gắn thêm Role (Phân quyền) lấy từ Database
+                user.setRole(rs.getInt("Role")); 
+                
+                // 3. Trả về kết quả
+                return user;
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -48,7 +56,7 @@ public class UserDAO extends DBContext {
 
     // Cập nhật hồ sơ cá nhân
     public void updateProfile(User user) {
-        String sql = "UPDATE NguoiDung SET HoTen = ?, SDT = ?, DiaChi = ?, QuanHuyen = ?, TinhThanh = ? WHERE Email = ?";
+        String sql = "UPDATE TAIKHOAN SET HoTen = ?, SDT = ?, DiaChi = ?, QuanHuyen = ?, TinhThanh = ? WHERE Email = ?";
         try {
             PreparedStatement st = connection.prepareStatement(sql);
             st.setString(1, user.getHoTen());

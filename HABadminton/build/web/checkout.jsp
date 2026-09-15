@@ -10,19 +10,27 @@
 
 <script>
     function prepareOrderData() {
-        const cart = JSON.parse(localStorage.getItem('habadminton_cart')) || [];
+        // ĐÃ FIX: Kiểm tra URL xem là Mua ngay hay Đặt hàng để lấy đúng danh sách
+        const urlParams = new URLSearchParams(window.location.search);
+        const isBuyNow = urlParams.get('buynow') === 'true';
+        let currentCart = [];
+        if (isBuyNow) {
+            currentCart = JSON.parse(sessionStorage.getItem('habadminton_buynow')) || [];
+        } else {
+            currentCart = JSON.parse(localStorage.getItem('habadminton_cart')) || [];
+        }
+        
         const form = document.getElementById('checkoutForm');
         
         // --- 1. Gửi mã Voucher (Nếu có) ---
         let inputVoucher = document.createElement('input');
         inputVoucher.type = 'hidden';
         inputVoucher.name = 'voucherCode';
-        // Lấy mã voucher từ biến selectedVoucherTemp của bạn
         inputVoucher.value = (typeof selectedVoucherTemp !== 'undefined' && selectedVoucherTemp) ? selectedVoucherTemp.code : '';
         form.appendChild(inputVoucher);
 
         // --- 2. Gửi thông tin Sản phẩm kèm Ảnh ---
-        cart.forEach(item => {
+        currentCart.forEach(item => {
             let inputName = document.createElement('input');
             inputName.type = 'hidden';
             inputName.name = 'productName';
@@ -88,10 +96,10 @@
                     <div class="form-row" style="margin-top: 15px;">
                         <textarea name="note" placeholder="Ghi chú thêm về đơn hàng..." rows="3" style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 4px; font-family: inherit;"></textarea>
                     </div>
-                </div> <!-- ĐÃ SỬA: Đóng thẻ div cho shipping-form -->
+                </div>
             </div>
 
-            <!-- CỘT PHẢI: TÓM TẮT ĐƠN HÀNG (NỀN TỐI) -->
+            <!-- CỘT PHẢI: TÓM TẮT ĐƠN HÀNG -->
             <div class="checkout-summary-box">
                 
                 <div class="summary-header">
@@ -132,10 +140,9 @@
 
                 <div class="summary-divider"></div>
 
-                <!-- PHƯƠNG THỨC THANH TOÁN (COD & MOMO) -->
+                <!-- PHƯƠNG THỨC THANH TOÁN -->
                 <h3 style="margin-bottom: 15px; font-size: 16px; color: #fff;">Phương thức thanh toán</h3>
                 <div class="payment-methods-row">
-                    <!-- Nút MoMo -->
                     <label class="payment-btn-item">
                         <input type="radio" name="paymentMethod" value="MOMO">
                         <div class="payment-btn-card">
@@ -144,7 +151,6 @@
                         </div>
                     </label>
 
-                    <!-- Nút Tiền mặt (COD) - Mặc định -->
                     <label class="payment-btn-item">
                         <input type="radio" name="paymentMethod" value="COD" checked>
                         <div class="payment-btn-card">
@@ -154,10 +160,8 @@
                     </label>
                 </div>
                 
-                <!-- Thẻ input ẩn truyền tổng tiền -->
                 <input type="hidden" name="totalAmount" id="hiddenTotalAmount" value="0">
 
-                <!-- NÚT ĐẶT HÀNG -->
                 <button type="button" class="btn-place-order" onclick="submitOrder()">
                     <i class="fa-solid fa-cart-shopping"></i> Đặt hàng
                 </button>
@@ -180,7 +184,6 @@
             <p class="vm-subtitle">Mã giảm giá có sẵn</p>
             
             <div class="vm-list" id="voucherListContainer">
-                <!-- Danh sách Voucher sẽ được JS render ở đây -->
             </div>
         </div>
         <div class="vm-footer">
@@ -192,8 +195,17 @@
 
     <!-- LOGIC XỬ LÝ DỮ LIỆU -->
     <script>
-        // 1. Tải giỏ hàng từ LocalStorage
-        let checkoutCart = JSON.parse(localStorage.getItem('habadminton_cart')) || [];
+        // ĐÃ FIX: Tải giỏ hàng tùy thuộc vào việc người dùng bấm "Mua ngay" hay vào giỏ hàng
+        const urlParams = new URLSearchParams(window.location.search);
+        const isBuyNow = urlParams.get('buynow') === 'true';
+
+        let checkoutCart = [];
+        if (isBuyNow) {
+            checkoutCart = JSON.parse(sessionStorage.getItem('habadminton_buynow')) || [];
+        } else {
+            checkoutCart = JSON.parse(localStorage.getItem('habadminton_cart')) || [];
+        }
+        
         let subTotal = 0;
         let appliedDiscount = 0;
 
@@ -218,7 +230,6 @@
 
                 listEl.innerHTML += `
                     <div class="chk-item">
-                        <!-- Bọc ảnh và nút xóa chung vào class mới -->
                         <div class="product-img-wrap">
                             <img src="\${item.image}" alt="\${item.name}">
                             <button type="button" class="btn-remove-red" onclick="removeCheckoutItem(\${index})">
@@ -237,17 +248,18 @@
             updateTotals();
         }
 
-        // Thêm hàm này để xử lý sự kiện khi bấm nút X
         function removeCheckoutItem(index) {
             checkoutCart.splice(index, 1);
-            localStorage.setItem('habadminton_cart', JSON.stringify(checkoutCart));
-            loadCheckoutItems();
-            
-            // Cập nhật lại giỏ hàng ngoài header nếu cần
-            if (typeof renderCart === 'function') {
-                cart = checkoutCart;
-                renderCart();
+            if (isBuyNow) {
+                sessionStorage.setItem('habadminton_buynow', JSON.stringify(checkoutCart));
+            } else {
+                localStorage.setItem('habadminton_cart', JSON.stringify(checkoutCart));
+                if (typeof renderCart === 'function') {
+                    cart = checkoutCart;
+                    renderCart();
+                }
             }
+            loadCheckoutItems();
         }
 
         function updateTotals() {
@@ -266,7 +278,7 @@
             document.getElementById('chkFinalTotal').innerText = formatMoney(finalTotal);
         }
 
-        // 2. LOGIC MODAL VOUCHER 
+        // LOGIC MODAL VOUCHER 
         const availableVouchers = [
             { id: 'V1', code: 'HA200K', title: 'Giảm 200.000đ', minOrder: 0, discount: 200000, date: '31/12/2026' },
             { id: 'V2', code: 'FREESHIP', title: 'Giảm 30.000đ (Phí Ship)', minOrder: 500000, discount: 30000, date: '15/10/2026' },
@@ -346,7 +358,6 @@
                 return;
             }
 
-            // GỌI HÀM NÀY ĐỂ TẠO CÁC THẺ INPUT ẨN (SẢN PHẨM, ẢNH, VOUCHER) TRƯỚC KHI GỬI ĐI
             prepareOrderData();
 
             let finalTotal = subTotal - appliedDiscount;
@@ -354,12 +365,10 @@
 
             document.getElementById('hiddenTotalAmount').value = finalTotal;
 
-            // BẮT BUỘC CHẠY VÀO PROCESS CHECKOUT ĐỂ LƯU DATABASE TRƯỚC
             form.action = "processCheckout";
             form.submit();
         }
 
-        // Khởi chạy khi load trang
         document.addEventListener('DOMContentLoaded', loadCheckoutItems);
     </script>
 </body>

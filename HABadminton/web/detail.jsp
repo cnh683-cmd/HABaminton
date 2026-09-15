@@ -59,7 +59,11 @@
                                 onclick="addToCart('${detail.maSP}', '${detail.tenSP}', ${detail.giaBan}, '${detail.hinhAnh}', document.getElementById('qtyInput').value)">
                             Thêm vào giỏ
                         </button>
-                        <button type="button" class="btn-buy-now">Mua ngay</button>
+                        <!-- ĐÃ FIX: Thêm sự kiện onclick cho nút Mua ngay -->
+                        <button type="button" class="btn-buy-now" 
+                                onclick="buyNowAction('${detail.maSP}', '${detail.tenSP}', ${detail.giaBan}, '${detail.hinhAnh}')">
+                            Mua ngay
+                        </button>
                     </div>
 
                     <div class="offer-box">
@@ -176,7 +180,7 @@
                 </div>
             </div>
 
-            <!-- 4. KHỐI SẢN PHẨM TƯƠNG TỰ (TRƯỢT BẰNG THANH GẠCH NGANG) -->
+            <!-- 4. KHỐI SẢN PHẨM TƯƠNG TỰ -->
             <div class="related-products">
                 <h2>Sản phẩm tương tự</h2>
                 
@@ -211,6 +215,26 @@
         <jsp:include page="footer.jsp"></jsp:include>
 
         <script>
+            // ĐÃ FIX: Hàm xử lý nút Mua Ngay
+            function buyNowAction(id, name, price, image) {
+                let qtyElement = document.getElementById('qtyInput');
+                let qty = qtyElement ? qtyElement.value : 1;
+                
+                let buyNowItem = [{
+                    id: id,
+                    name: name,
+                    price: price,
+                    image: image,
+                    quantity: parseInt(qty)
+                }];
+                
+                // Lưu vào SessionStorage để không ảnh hưởng giỏ hàng chính
+                sessionStorage.setItem('habadminton_buynow', JSON.stringify(buyNowItem));
+                
+                // Chuyển hướng sang trang thanh toán kèm cờ hiệu
+                window.location.href = "checkout.jsp?buynow=true";
+            }
+
             function changeImage(element) {
                 document.getElementById('mainImage').src = element.src;
                 document.querySelectorAll('.thumbnail-list .thumb').forEach(th => th.classList.remove('active'));
@@ -253,21 +277,17 @@
                 });
             });
 
-            // ==========================================
-            // LOGIC TRƯỢT NGANG VÀ THANH GẠCH CHO SẢN PHẨM TƯƠNG TỰ (CHẬM VÀ MƯỢT)
-            // ==========================================
+            // LOGIC TRƯỢT NGANG
             const track = document.getElementById('relatedTrack');
             const dotsContainer = document.getElementById('relatedDots');
             let autoSlideInterval;
 
-            // 1. Hàm trượt có thể điều chỉnh thời gian (Custom Smooth Scroll)
             function smoothScrollHorizontal(element, target, duration) {
-                element.style.scrollSnapType = 'none'; // Tạm tắt snap để không bị khựng
+                element.style.scrollSnapType = 'none'; 
                 const start = element.scrollLeft;
                 const change = target - start;
                 let startTime = null;
 
-                // Hàm gia tốc chuyển động mượt mà (Chậm ở 2 đầu, nhanh ở giữa)
                 function easeInOutQuad(t, b, c, d) {
                     t /= d / 2;
                     if (t < 1) return c / 2 * t * t + b;
@@ -285,14 +305,13 @@
                     if (timeElapsed < duration) {
                         window.requestAnimationFrame(animateScroll);
                     } else {
-                        element.scrollLeft = target; // Ép về đích chính xác
-                        element.style.scrollSnapType = 'x mandatory'; // Bật lại snap
+                        element.scrollLeft = target; 
+                        element.style.scrollSnapType = 'x mandatory'; 
                     }
                 }
                 window.requestAnimationFrame(animateScroll);
             }
 
-            // 2. Kéo thả bằng chuột (Mouse Dragging)
             let isDown = false;
             let startX;
             let scrollLeft;
@@ -325,7 +344,6 @@
                 track.scrollLeft = scrollLeft - walk;
             });
 
-            // 3. Tạo thanh gạch ngang (dots)
             function setupDots() {
                 const totalItems = track.children.length;
                 if(totalItems <= 4) return; 
@@ -337,7 +355,6 @@
                     
                     dot.addEventListener('click', () => {
                         const cardWidth = track.querySelector('.related-card').offsetWidth + 20;
-                        // Trượt trong 1000ms (1 giây) khi bấm vào gạch ngang
                         smoothScrollHorizontal(track, cardWidth * i, 1000); 
                     });
                     
@@ -345,7 +362,6 @@
                 }
             }
 
-            // 4. Đồng bộ màu thanh gạch khi trượt
             track.addEventListener('scroll', () => {
                 const scrollPercentage = track.scrollLeft / (track.scrollWidth - track.clientWidth);
                 const dots = document.querySelectorAll('.related-dots .dot');
@@ -360,7 +376,6 @@
                 }
             });
 
-            // 5. Trượt tự động êm ái
             function autoSlide() {
                 if (!track) return;
                 const card = track.querySelector('.related-card');
@@ -369,27 +384,22 @@
                 const scrollAmount = card.offsetWidth + 20;
                 let targetScroll = track.scrollLeft + scrollAmount;
 
-                // Nếu chạm tới cuối cùng thì cuộn mượt mà về đầu trang
                 if (track.scrollLeft + track.clientWidth >= track.scrollWidth - 10) {
                     targetScroll = 0;
                 }
-                
-                // Set thời gian trượt là 1200ms (1.2 giây) để tạo cảm giác chậm rãi lướt qua
                 smoothScrollHorizontal(track, targetScroll, 1200); 
             }
 
             function startAutoSlide() {
                 const totalItems = track.children.length;
                 if (totalItems > 4) { 
-                    autoSlideInterval = setInterval(autoSlide, 3500); // Đợi 3.5 giây rồi trượt tiếp
+                    autoSlideInterval = setInterval(autoSlide, 3500); 
                 }
             }
 
-            // Khởi chạy
             setupDots();
             startAutoSlide();
 
-            // Tạm dừng khi hover
             const relatedContainer = document.querySelector('.related-slider-container');
             if (relatedContainer) {
                 relatedContainer.addEventListener('mouseenter', () => clearInterval(autoSlideInterval));

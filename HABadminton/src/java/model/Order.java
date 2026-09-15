@@ -19,6 +19,8 @@ public class Order {
     private String emailKhachHang; 
     private String maVoucher;
     private String ghiChu;
+    private int userDaXem;
+    private String lyDoHuy;
 
     public Order() {
     }
@@ -67,4 +69,8 @@ public class Order {
     public void setMaVoucher(String maVoucher) { this.maVoucher = maVoucher; }
     public String getGhiChu() { return ghiChu; }
     public void setGhiChu(String ghiChu) { this.ghiChu = ghiChu; }
+    public int getUserDaXem() { return userDaXem; }
+    public void setUserDaXem(int userDaXem) { this.userDaXem = userDaXem; }
+    public String getLyDoHuy() { return lyDoHuy; }
+    public void setLyDoHuy(String lyDoHuy) { this.lyDoHuy = lyDoHuy; }
 }
