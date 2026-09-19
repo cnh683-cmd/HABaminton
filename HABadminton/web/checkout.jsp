@@ -10,7 +10,6 @@
 
 <script>
     function prepareOrderData() {
-        // ĐÃ FIX: Kiểm tra URL xem là Mua ngay hay Đặt hàng để lấy đúng danh sách
         const urlParams = new URLSearchParams(window.location.search);
         const isBuyNow = urlParams.get('buynow') === 'true';
         let currentCart = [];
@@ -29,8 +28,15 @@
         inputVoucher.value = (typeof selectedVoucherTemp !== 'undefined' && selectedVoucherTemp) ? selectedVoucherTemp.code : '';
         form.appendChild(inputVoucher);
 
-        // --- 2. Gửi thông tin Sản phẩm kèm Ảnh ---
+        // --- 2. Gửi thông tin Sản phẩm kèm Ảnh và Mã SP ---
         currentCart.forEach(item => {
+            // BỔ SUNG: Gửi Mã Sản Phẩm (ID)
+            let inputId = document.createElement('input');
+            inputId.type = 'hidden';
+            inputId.name = 'productId';
+            inputId.value = item.id;
+            form.appendChild(inputId);
+
             let inputName = document.createElement('input');
             inputName.type = 'hidden';
             inputName.name = 'productName';
@@ -63,7 +69,6 @@
     <jsp:include page="header.jsp"></jsp:include>
 
     <div class="container checkout-page">
-        <!-- 1. Thêm Tiêu đề Thanh toán ở chính giữa -->
         <h1 class="checkout-main-title">Thanh toán</h1>
 
         <form id="checkoutForm" action="processCheckout" method="POST" class="checkout-layout" onsubmit="return prepareOrderData()">
@@ -92,7 +97,6 @@
                         <input type="text" name="district" value="${sessionScope.user.quanHuyen}" placeholder="Quận / Huyện" required>
                         <input type="text" name="city" value="${sessionScope.user.tinhThanh}" placeholder="Tỉnh / Thành phố" required>
                     </div>
-                    <!-- BỔ SUNG Ô NHẬP GHI CHÚ TẠI ĐÂY -->
                     <div class="form-row" style="margin-top: 15px;">
                         <textarea name="note" placeholder="Ghi chú thêm về đơn hàng..." rows="3" style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 4px; font-family: inherit;"></textarea>
                     </div>
@@ -116,7 +120,6 @@
 
                 <div class="summary-divider"></div>
 
-                <!-- Kích hoạt Modal Voucher -->
                 <div class="voucher-trigger" onclick="openVoucherModal()">
                     <i class="fa-solid fa-ticket"></i>
                     <span id="selectedVoucherText">Chọn HA Voucher</span>
@@ -140,7 +143,6 @@
 
                 <div class="summary-divider"></div>
 
-                <!-- PHƯƠNG THỨC THANH TOÁN -->
                 <h3 style="margin-bottom: 15px; font-size: 16px; color: #fff;">Phương thức thanh toán</h3>
                 <div class="payment-methods-row">
                     <label class="payment-btn-item">
@@ -193,9 +195,7 @@
 
     <jsp:include page="footer.jsp"></jsp:include>
 
-    <!-- LOGIC XỬ LÝ DỮ LIỆU -->
     <script>
-        // ĐÃ FIX: Tải giỏ hàng tùy thuộc vào việc người dùng bấm "Mua ngay" hay vào giỏ hàng
         const urlParams = new URLSearchParams(window.location.search);
         const isBuyNow = urlParams.get('buynow') === 'true';
 
@@ -278,7 +278,6 @@
             document.getElementById('chkFinalTotal').innerText = formatMoney(finalTotal);
         }
 
-        // LOGIC MODAL VOUCHER 
         const availableVouchers = [
             { id: 'V1', code: 'HA200K', title: 'Giảm 200.000đ', minOrder: 0, discount: 200000, date: '31/12/2026' },
             { id: 'V2', code: 'FREESHIP', title: 'Giảm 30.000đ (Phí Ship)', minOrder: 500000, discount: 30000, date: '15/10/2026' },

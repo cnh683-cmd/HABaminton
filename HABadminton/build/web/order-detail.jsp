@@ -138,10 +138,38 @@
                                 <p style="margin: 0; font-size: 14px;"><strong>Lý do:</strong> ${not empty order.lyDoHuy ? order.lyDoHuy : 'Không có lý do cụ thể'}</p>
                             </div>
                         </c:when>
+
+                        <%-- ĐÃ FIX: KHI ĐƠN HÀNG ĐÃ GIAO (TRẠNG THÁI = 4), HIỂN THỊ KHU VỰC ĐÁNH GIÁ --%>
+                        <c:when test="${order.trangThai == 4}">
+                            <div class="review-section" style="margin-top: 20px; padding: 15px; border: 1px solid #eee; border-radius: 8px; background-color: #f9f9f9;">
+                                <h3 style="margin-top: 0; margin-bottom: 15px; font-size: 16px; border-bottom: 1px solid #ddd; padding-bottom: 10px; color: #002347;">
+                                    <i class="fa-solid fa-star" style="color: #ffcc00;"></i> Đánh giá sản phẩm đã mua
+                                </h3>
+                                
+                                <c:forEach items="${order.chiTietList}" var="item">
+                                    <div class="review-item" style="display: flex; align-items: center; justify-content: space-between; padding: 12px 0; border-bottom: 1px dashed #ddd;">
+                                        <div style="display: flex; align-items: center; gap: 12px; flex: 1;">
+                                            <img src="${item.hinhAnh}" alt="${item.tenSP}" style="width: 50px; height: 50px; object-fit: contain; border-radius: 6px; border: 1px solid #eee; background: #fff;">
+                                            <div style="flex: 1; padding-right: 15px;">
+                                                <p style="margin: 0; font-weight: 500; font-size: 14px; color: #333; line-height: 1.4;">${item.tenSP}</p>
+                                            </div>
+                                        </div>
+                                        
+                                        <%-- Nút mở Modal đánh giá, truyền mã SP, Tên SP và Ảnh --%>
+                                        <button class="btn-review" style="background-color: #ff6600; color: white; border: none; padding: 8px 18px; border-radius: 4px; cursor: pointer; font-size: 13px; font-weight: 600; white-space: nowrap; transition: background 0.3s;" 
+                                                onclick="openReviewModal('${item.maSP}', '${item.tenSP}', '${item.hinhAnh}')"
+                                                onmouseover="this.style.backgroundColor='#e65c00'" 
+                                                onmouseout="this.style.backgroundColor='#ff6600'">
+                                            Đánh giá
+                                        </button>
+                                    </div>
+                                </c:forEach>
+                            </div>
+                        </c:when>
                     </c:choose>
                 </div>
                 
-                <!-- JS Xử lý nhập lý do cho User -->
+                <!-- JS Xử lý nhập lý do Hủy đơn cho User -->
                 <script>
                     function cancelOrderUser(id) {
                         let reason = prompt("Nhập lý do bạn muốn hủy đơn hàng này:");
@@ -200,6 +228,112 @@
             </div>
         </div>
     </div>
+
+    <!-- ĐÃ FIX: MODAL ĐÁNH GIÁ (POPUP) -->
+    <div id="reviewModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 9999; align-items: center; justify-content: center;">
+        <div style="background: white; padding: 25px; border-radius: 10px; width: 450px; max-width: 90%; box-shadow: 0 10px 25px rgba(0,0,0,0.2); animation: fadeIn 0.3s ease;">
+            <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #eee; padding-bottom: 12px; margin-bottom: 18px;">
+                <h3 style="margin: 0; font-size: 18px; color: #002347;">Đánh giá sản phẩm</h3>
+                <span onclick="closeReviewModal()" style="cursor: pointer; font-size: 24px; color: #999; line-height: 1;">&times;</span>
+            </div>
+            
+            <form id="reviewForm" action="submitReview" method="POST">
+                <!-- Gửi ngầm thông tin về server -->
+                <input type="hidden" name="maDonHang" value="${order.maDonHang}">
+                <input type="hidden" name="maSP" id="modalMaSP" value="">
+                
+                <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 20px; background: #f9f9f9; padding: 10px; border-radius: 6px;">
+                    <img id="modalImgSP" src="" alt="Hình sản phẩm" style="width: 60px; height: 60px; object-fit: contain; border-radius: 4px; border: 1px solid #ddd; background: #fff;">
+                    <strong id="modalTenSP" style="font-size: 14px; color: #333; line-height: 1.4;"></strong>
+                </div>
+
+                <div style="margin-bottom: 20px; text-align: center;">
+                    <label style="display: block; margin-bottom: 10px; font-weight: 600; color: #333;">Chất lượng sản phẩm:</label>
+                    <div id="starRating" style="color: #ffcc00; font-size: 28px; cursor: pointer; display: flex; justify-content: center; gap: 8px;">
+                        <i class="fa-regular fa-star" data-value="1"></i>
+                        <i class="fa-regular fa-star" data-value="2"></i>
+                        <i class="fa-regular fa-star" data-value="3"></i>
+                        <i class="fa-regular fa-star" data-value="4"></i>
+                        <i class="fa-regular fa-star" data-value="5"></i>
+                    </div>
+                    <!-- Bắt buộc chọn sao -->
+                    <input type="hidden" name="soSao" id="modalSoSao" value="0" required>
+                </div>
+
+                <div style="margin-bottom: 20px;">
+                    <label style="display: block; margin-bottom: 8px; font-weight: 600; color: #333;">Nhận xét chi tiết:</label>
+                    <textarea name="noiDung" rows="4" style="width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 6px; box-sizing: border-box; font-family: inherit; font-size: 14px; resize: vertical;" placeholder="Hãy chia sẻ nhận xét của bạn về sản phẩm này nhé..." required></textarea>
+                </div>
+
+                <div style="text-align: right; border-top: 1px solid #eee; padding-top: 15px;">
+                    <button type="button" onclick="closeReviewModal()" style="padding: 10px 20px; background: #f1f1f1; color: #333; border: none; border-radius: 6px; cursor: pointer; margin-right: 10px; font-weight: 500;">Trở lại</button>
+                    <button type="submit" style="padding: 10px 20px; background: #ff6600; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: 600;">Gửi đánh giá</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Script điều khiển Modal Đánh giá -->
+    <script>
+        function openReviewModal(maSP, tenSP, hinhAnh) {
+            // Gán dữ liệu vào Modal
+            document.getElementById('modalMaSP').value = maSP;
+            document.getElementById('modalTenSP').innerText = tenSP;
+            document.getElementById('modalImgSP').src = hinhAnh;
+            
+            // Reset sao và textbox mỗi lần mở
+            document.getElementById('modalSoSao').value = "";
+            document.querySelector('#reviewForm textarea').value = "";
+            const stars = document.querySelectorAll('#starRating i');
+            stars.forEach(s => {
+                s.classList.remove('fa-solid');
+                s.classList.add('fa-regular');
+            });
+
+            // Hiển thị Modal
+            document.getElementById('reviewModal').style.display = 'flex';
+        }
+
+        function closeReviewModal() {
+            document.getElementById('reviewModal').style.display = 'none';
+        }
+
+        // Logic click chọn số sao
+        const stars = document.querySelectorAll('#starRating i');
+        stars.forEach(star => {
+            star.addEventListener('click', function() {
+                const value = parseInt(this.getAttribute('data-value'));
+                document.getElementById('modalSoSao').value = value;
+                
+                stars.forEach(s => {
+                    const sValue = parseInt(s.getAttribute('data-value'));
+                    if (sValue <= value) {
+                        s.classList.remove('fa-regular');
+                        s.classList.add('fa-solid');
+                    } else {
+                        s.classList.remove('fa-solid');
+                        s.classList.add('fa-regular');
+                    }
+                });
+            });
+        });
+
+        // Chặn submit nếu chưa chọn sao
+        document.getElementById('reviewForm').addEventListener('submit', function(e) {
+            const soSao = document.getElementById('modalSoSao').value;
+            if (soSao == "0" || soSao == "") {
+                e.preventDefault();
+                alert("Vui lòng chọn số sao đánh giá trước khi gửi!");
+            }
+        });
+    </script>
+    
+    <style>
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
 
     <jsp:include page="footer.jsp"></jsp:include>
 </body>

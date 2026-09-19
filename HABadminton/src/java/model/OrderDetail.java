@@ -4,7 +4,8 @@ public class OrderDetail {
     private String tenSP;
     private int soLuong;
     private int giaMua;
-    private String hinhAnh; // Bổ sung biến lưu ảnh
+    private String hinhAnh;
+    private String maSP;
 
     public OrderDetail() {
     }
@@ -25,4 +26,11 @@ public class OrderDetail {
     // Getter và Setter cho hinhAnh
     public String getHinhAnh() { return hinhAnh; }
     public void setHinhAnh(String hinhAnh) { this.hinhAnh = hinhAnh; }
+    public String getMaSP() {
+        return maSP;
+    }
+
+    public void setMaSP(String maSP) {
+        this.maSP = maSP;
+    }
 }
