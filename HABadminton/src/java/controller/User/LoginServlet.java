@@ -21,20 +21,18 @@ public class LoginServlet extends HttpServlet {
         String password = request.getParameter("password");
         
         UserDAO dao = new UserDAO();
-        User loginUser = dao.checkLogin(email, password); // Check DB
+        User loginUser = dao.checkLogin(email, password);
         
         if (loginUser != null) {
             HttpSession session = request.getSession();
             session.setAttribute("user", loginUser);
             
-            // KIỂM TRA ROLE ĐỂ PHÂN LUỒNG
             if (loginUser.getRole() == 1) {
-                response.sendRedirect("admin-orders"); // Admin vào trang quản lý
+                response.sendRedirect("admin-orders");
             } else {
-                response.sendRedirect("index.jsp"); // Khách hàng về trang chủ
+                response.sendRedirect("index.jsp");
             }
         } else {
-            // Đăng nhập sai: Truyền biến error và giữ nguyên trang login
             request.setAttribute("error", "Email hoặc mật khẩu không đúng!");
             request.getRequestDispatcher("login.jsp").forward(request, response);
         }

@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <web-app version="6.0" xmlns="https://jakarta.ee/xml/ns/jakartaee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="https://jakarta.ee/xml/ns/jakartaee https://jakarta.ee/xml/ns/jakartaee/web-app_6_0.xsd">
-    <!-- KHAI BÁO SERVLET -->
     <servlet>
         <servlet-name>ProcessCheckoutServlet</servlet-name>
         <servlet-class>controller.User.ProcessCheckoutServlet</servlet-class>
@@ -33,7 +32,6 @@
         <servlet-name>UpdateProfileServlet</servlet-name>
         <servlet-class>controller.User.UpdateProfileServlet</servlet-class>
     </servlet>
-    <!-- MAP ĐƯỜNG DẪN (URL-PATTERN) -->
     <servlet-mapping>
         <servlet-name>ProcessCheckoutServlet</servlet-name>
         <url-pattern>/processCheckout</url-pattern>

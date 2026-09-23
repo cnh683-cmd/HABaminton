@@ -13,7 +13,6 @@
     <jsp:include page="header.jsp"></jsp:include>
 
     <div class="result-page">
-        <!-- ĐÃ FIX: Dùng biến isSuccess để đổi màu viền -->
         <div class="invoice-box" style="border-top: 5px solid ${(order.phuongThucThanhToan == 'MOMO' and isSuccess == false) ? '#dc3545' : '#28a745'};">
             
             <c:choose>
@@ -139,7 +138,6 @@
     </div>
     
     <script>
-        // ĐÃ FIX: Chỉ xóa bộ nhớ tạm nếu khách Mua Ngay, còn không thì xóa giỏ hàng
         if (sessionStorage.getItem('habadminton_buynow')) {
             sessionStorage.removeItem('habadminton_buynow');
         } else {

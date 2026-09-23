@@ -76,11 +76,11 @@
 
                     <main class="main-products">
                         
-                        <!-- GIAO DIỆN MENU CÁC DÒNG SẢN PHẨM TRỰC QUAN (Chỉ hiện khi chưa chọn hãng) -->
+                        <!-- GIAO DIỆN MENU CÁC DÒNG SẢN PHẨM TRỰC QUAN -->
                         <c:if test="${empty param.brandId}">
                             <div class="brand-visual-menu">
                                 <c:choose>
-                                    <c:when test="${param.id == '1'}"> <!-- Dành riêng cho Vợt -->
+                                    <c:when test="${param.id == '1'}">
                                         <div class="brand-grid">
                                             <a href="category?id=1&brandId=1" class="brand-card">
                                                 <div class="brand-img"><img src="images/Vợt Cầu Lông Yonex Astrox 100ZZ.jpg" onerror="this.src='images/bia1.png'" alt="Yonex"></div>
@@ -105,7 +105,7 @@
                                         </div>
                                     </c:when>
 
-                                    <c:when test="${param.id == '2'}"> <!-- Dành riêng cho Giày -->
+                                    <c:when test="${param.id == '2'}">
                                         <div class="brand-grid">
                                             <a href="category?id=2&brandId=1" class="brand-card">
                                                 <div class="brand-img"><img src="images/Giày Cầu Lông Yonex 88 Dial 3 Wide 2025.jpg" onerror="this.src='images/bia1.png'" alt="Yonex"></div>
@@ -130,7 +130,7 @@
                                         </div>
                                     </c:when>
 
-                                    <c:when test="${param.id == '3'}"> <!-- Dành riêng cho Áo -->
+                                    <c:when test="${param.id == '3'}">
                                         <div class="brand-grid">
                                             <a href="category?id=3&brandId=1" class="brand-card">
                                                 <div class="brand-img"><img src="images/ao_yonex.png" onerror="this.src='images/bia1.png'"></div>
@@ -155,7 +155,7 @@
                                         </div>
                                     </c:when>
                                     
-                                    <c:when test="${param.id == '7'}"> <!-- Dành riêng cho Balo -->
+                                    <c:when test="${param.id == '7'}">
                                         <div class="brand-grid">
                                             <a href="category?id=7&brandId=1" class="brand-card">
                                                 <div class="brand-img"><img src="images/Balo C ng Yonex BAG2218.jpg" onerror="this.src='images/bia1.png'"></div>
@@ -213,11 +213,9 @@
                             <c:forEach items="${listSP}" var="p">
                                 <div class="product-card">
                                     <div class="product-img">
-                                        <!-- Cập nhật link cho ảnh -->
                                         <a href="detail?id=${p.maSP}">
                                             <img src="${p.hinhAnh}" alt="${p.tenSP}">
                                         </a>
-                                        <!-- Cập nhật link cho nút -->
                                         <a href="detail?id=${p.maSP}" class="btn-detail">XEM CHI TIẾT</a>
                                     </div>
                                     <div class="product-info">
@@ -260,17 +258,14 @@
                 let minVal = parseInt(rangeInput[0].value),
                     maxVal = parseInt(rangeInput[1].value);
                 
-                // Vẽ màu cam
                 progress.style.left = (minVal / rangeInput[0].max) * 100 + "%";
                 progress.style.right = 100 - (maxVal / rangeInput[1].max) * 100 + "%";
                 
-                // Cập nhật số liệu hiển thị (Ẩn số 0 và 10 triệu để hiện placeholder Từ/Đến)
                 priceInput[0].value = minVal === 0 ? '' : minVal.toLocaleString('vi-VN');
                 priceInput[1].value = maxVal === 10000000 ? '' : maxVal.toLocaleString('vi-VN');
             }
 
             rangeInput.forEach(input => {
-                // Sự kiện 'input': Chạy mượt mà KHI ĐANG KÉO CHUỘT
                 input.addEventListener("input", e => {
                     let minVal = parseInt(rangeInput[0].value),
                         maxVal = parseInt(rangeInput[1].value);
@@ -286,20 +281,16 @@
                     }
                 });
 
-                // Sự kiện 'change': TỰ ĐỘNG SUBMIT khi thả chuột (không cần nút Áp dụng)
                 input.addEventListener("change", () => {
-                    // Xóa tùy chọn RadioBox để Backend ưu tiên lấy giá trị thanh trượt
                     document.querySelectorAll('input[name="priceRange"]').forEach(r => r.checked = false);
                     mainForm.submit();
                 });
             });
 
-            // 3. Hiệu ứng cuộn trang chậm tùy chỉnh
             if ('scrollRestoration' in history) {
                 history.scrollRestoration = 'manual'; 
             }
 
-            // Hàm tính toán gia tốc cuộn (chậm ở hai đầu, nhanh ở giữa)
             function easeInOutQuad(t, b, c, d) {
                 t /= d / 2;
                 if (t < 1) return c / 2 * t * t + b;
@@ -307,7 +298,6 @@
                 return -c / 2 * (t * (t - 2) - 1) + b;
             }
 
-            // Hàm cuộn trang tự chế với tham số thời gian
             function slowScrollTo(targetPosition, duration) {
                 const startPosition = window.scrollY;
                 const distance = targetPosition - startPosition;
@@ -334,7 +324,6 @@
                     if (target) {
                         const offsetTop = target.getBoundingClientRect().top + window.scrollY - 90;
                         
-                        // Nghỉ 100ms để trình duyệt kịp vẽ giao diện, sau đó bắt đầu trượt
                         setTimeout(() => {
                             slowScrollTo(offsetTop, 1500);
                         }, 100); 

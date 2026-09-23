@@ -23,7 +23,6 @@ public class OrderDetail {
     public int getGiaMua() { return giaMua; }
     public void setGiaMua(int giaMua) { this.giaMua = giaMua; }
     
-    // Getter và Setter cho hinhAnh
     public String getHinhAnh() { return hinhAnh; }
     public void setHinhAnh(String hinhAnh) { this.hinhAnh = hinhAnh; }
     public String getMaSP() {

@@ -1,5 +1,9 @@
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
-<!DOCTYPE html>
+<%@ taglib prefix="c" uri="jakarta.tags.core" %>
+
+<c:if test="${empty sessionScope.user}">
+    <c:redirect url="login.jsp" />
+</c:if><!DOCTYPE html>
 <html>
 <head>
     <meta charset="UTF-8">
@@ -21,7 +25,7 @@
         
         const form = document.getElementById('checkoutForm');
         
-        // --- 1. Gửi mã Voucher (Nếu có) ---
+        // --- 1. Gửi mã Voucher ---
         let inputVoucher = document.createElement('input');
         inputVoucher.type = 'hidden';
         inputVoucher.name = 'voucherCode';
@@ -30,7 +34,6 @@
 
         // --- 2. Gửi thông tin Sản phẩm kèm Ảnh và Mã SP ---
         currentCart.forEach(item => {
-            // BỔ SUNG: Gửi Mã Sản Phẩm (ID)
             let inputId = document.createElement('input');
             inputId.type = 'hidden';
             inputId.name = 'productId';
@@ -55,7 +58,6 @@
             inputPrice.value = item.price;
             form.appendChild(inputPrice);
             
-            // Gửi Link Ảnh
             let inputImage = document.createElement('input');
             inputImage.type = 'hidden';
             inputImage.name = 'productImage';
@@ -68,6 +70,10 @@
 <body>
     <jsp:include page="header.jsp"></jsp:include>
 
+    <c:if test="${empty sessionScope.user}">
+        <c:redirect url="login.jsp" />
+    </c:if>
+
     <div class="container checkout-page">
         <h1 class="checkout-main-title">Thanh toán</h1>
 
@@ -76,34 +82,53 @@
             <div class="checkout-shipping">
                 <h2 class="centered-title">Thông tin giao hàng</h2>
                 <div class="shipping-form">
-                    <div class="form-row form-col-2">
-                        <input type="text" name="lastName" placeholder="Họ">
-                        <input type="text" name="firstName" value="${sessionScope.user.hoTen}" placeholder="Tên" required>
+                    
+                    <input type="hidden" id="hiddenCheckoutName" value="${sessionScope.user.hoTen}">
+
+                    <div class="form-row form-col-2" style="display: flex; gap: 15px; margin-bottom: 15px;">
+                        <input type="text" id="chkLastName" name="lastName" placeholder="Họ" style="flex: 1;">
+                        <input type="text" id="chkFirstName" name="firstName" placeholder="Tên" required style="flex: 1;">
+                    </div>
+                    
+                    <script>
+                        (function() {
+                            let fullName = "${sessionScope.user.hoTen}";
+                            if (fullName && fullName.trim() !== "") {
+                                fullName = fullName.trim();
+                                let lastSpace = fullName.lastIndexOf(" ");
+                                if (lastSpace !== -1) {
+                                    document.getElementById("chkLastName").value = fullName.substring(0, lastSpace);
+                                    document.getElementById("chkFirstName").value = fullName.substring(lastSpace + 1);
+                                } else {
+                                    document.getElementById("chkFirstName").value = fullName;
+                                }
+                            }
+                        })();
+                    </script>
+
+                    <div class="form-row" style="margin-bottom: 15px;">
+                        <input type="email" id="email" name="email" value="${sessionScope.user.email}" readonly style="background-color: #f5f5f5; cursor: not-allowed; width: 100%; color: #888; border: 1px solid #ddd; padding: 10px; border-radius: 4px;">
                     </div>
 
-                    <div class="form-row">
-                        <input type="email" name="email" value="${sessionScope.user.email}" placeholder="Email (Không bắt buộc)">
+                    <div class="form-row" style="margin-bottom: 15px;">
+                        <input type="text" name="phone" value="${sessionScope.user.sdt}" placeholder="Số điện thoại" required style="width: 100%;">
                     </div>
 
-                    <div class="form-row">
-                        <input type="text" name="phone" value="${sessionScope.user.sdt}" placeholder="Số điện thoại" required>
+                    <div class="form-row" style="margin-bottom: 15px;">
+                        <input type="text" name="address" value="${sessionScope.user.diaChi}" placeholder="Địa chỉ nhà (Số nhà, tên đường...)" required style="width: 100%;">
                     </div>
 
-                    <div class="form-row">
-                        <input type="text" name="address" value="${sessionScope.user.diaChi}" placeholder="Địa chỉ nhà (Số nhà, tên đường...)" required>
+                    <div class="form-row form-col-2" style="display: flex; gap: 15px; margin-bottom: 15px;">
+                        <input type="text" name="district" value="${sessionScope.user.quanHuyen}" placeholder="Quận / Huyện" required style="flex: 1;">
+                        <input type="text" name="city" value="${sessionScope.user.tinhThanh}" placeholder="Tỉnh / Thành phố" required style="flex: 1;">
                     </div>
-
-                    <div class="form-row form-col-2">
-                        <input type="text" name="district" value="${sessionScope.user.quanHuyen}" placeholder="Quận / Huyện" required>
-                        <input type="text" name="city" value="${sessionScope.user.tinhThanh}" placeholder="Tỉnh / Thành phố" required>
-                    </div>
+                    
                     <div class="form-row" style="margin-top: 15px;">
-                        <textarea name="note" placeholder="Ghi chú thêm về đơn hàng..." rows="3" style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 4px; font-family: inherit;"></textarea>
+                        <textarea name="note" placeholder="Ghi chú thêm về đơn hàng..." rows="3" style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 4px; font-family: inherit; resize: vertical;"></textarea>
                     </div>
                 </div>
             </div>
 
-            <!-- CỘT PHẢI: TÓM TẮT ĐƠN HÀNG -->
             <div class="checkout-summary-box">
                 
                 <div class="summary-header">

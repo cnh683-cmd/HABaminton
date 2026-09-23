@@ -12,6 +12,8 @@ public class SanPham {
     private boolean banChay;
     private String ngayTao;
     private String moTa;
+    private String xuatXu;
+    private String thongSo;
 
     public SanPham() {
     }
@@ -29,9 +31,23 @@ public class SanPham {
         this.ngayTao = ngayTao;
         this.moTa = moTa;
     }
+
+    public SanPham(int maSP, String tenSP, double giaGoc, double giaBan, String hinhAnh, int maDM, int maTH, boolean sanPhamMoi, boolean banChay, String ngayTao, String moTa, String xuatXu, String thongSo) {
+        this.maSP = maSP;
+        this.tenSP = tenSP;
+        this.giaGoc = giaGoc;
+        this.giaBan = giaBan;
+        this.hinhAnh = hinhAnh;
+        this.maDM = maDM;
+        this.maTH = maTH;
+        this.sanPhamMoi = sanPhamMoi;
+        this.banChay = banChay;
+        this.ngayTao = ngayTao;
+        this.moTa = moTa;
+        this.xuatXu = xuatXu;
+        this.thongSo = thongSo;
+    }
     
-    // Các hàm Getter/Setter (Nhấn Alt + Insert để NetBeans sinh tự động nếu muốn, 
-    // hoặc copy đoạn dưới đây)
 
     public int getMaSP() { return maSP; }
     public void setMaSP(int maSP) { this.maSP = maSP; }
@@ -65,4 +81,10 @@ public class SanPham {
 
     public String getMoTa() { return moTa; }
     public void setMoTa(String moTa) { this.moTa = moTa; }
+
+    public String getXuatXu() { return xuatXu; }
+    public void setXuatXu(String xuatXu) { this.xuatXu = xuatXu; }
+
+    public String getThongSo() { return thongSo; }
+    public void setThongSo(String thongSo) { this.thongSo = thongSo; }
 }

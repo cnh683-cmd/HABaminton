@@ -1,4 +1,4 @@
-package controller.User; // Hoặc controller.Admin tùy cách bạn chia thư mục
+package controller.User;
 
 import dal.OrderDAO;
 import java.io.IOException;
@@ -17,18 +17,16 @@ public class CancelOrderServlet extends HttpServlet {
         
         String id = request.getParameter("id");
         String reason = request.getParameter("reason");
-        String from = request.getParameter("from"); // Phân biệt Admin hay User gọi
+        String from = request.getParameter("from");
         
         if (id != null && reason != null) {
             OrderDAO dao = new OrderDAO();
             dao.cancelOrder(id, reason);
         }
         
-        // Điều hướng trả về
         if ("admin".equals(from)) {
             response.sendRedirect("admin-orders");
         } else {
-            // Khách hàng hủy thì load lại trang chi tiết đơn đó
             response.sendRedirect("order-detail?id=" + id); 
         }
     }

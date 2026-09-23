@@ -2968,6 +2968,7 @@ html {
     height: fit-content;
 }
 
+/* CSS Cập nhật cho Ảnh đại diện */
 .profile-avatar {
     width: 80px;
     height: 80px;
@@ -2980,6 +2981,39 @@ html {
     font-size: 30px;
     margin: 0 auto 15px auto;
     position: relative;
+    cursor: pointer; /* Thêm con trỏ chuột bấm được */
+    overflow: hidden; /* Để ảnh không tràn viền tròn */
+    border: 2px solid #e3f2fd;
+}
+
+/* Định dạng cho thẻ img khi có ảnh */
+.profile-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 50%;
+}
+
+/* Lớp phủ (Overlay) hiện biểu tượng Camera khi hover */
+.avatar-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    font-size: 20px;
+    opacity: 0; /* Ẩn đi mặc định */
+    transition: opacity 0.3s ease;
+    border-radius: 50%;
+}
+
+.profile-avatar:hover .avatar-overlay {
+    opacity: 1; /* Hiện ra khi di chuột vào */
 }
 
 .profile-sidebar h3 { font-size: 18px; color: #333; margin-bottom: 5px; }
@@ -3233,14 +3267,87 @@ html {
 .text-red { color: #dc3545; }
 
 /* Cột Phải */
-.od-right-col { width: 65%; }
+
+.od-right-col {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    overflow: hidden;
+}
 
 .od-progress-track {
-    display: flex; justify-content: space-between; position: relative; margin-bottom: 40px; padding-top: 20px;
+    display: flex;
+    justify-content: space-between;
+    position: relative;
+    padding-bottom: 30px;
 }
-.od-progress-track::before {
-    content: ''; position: absolute; top: 40px; left: 30px; right: 30px; height: 2px; background: #eee; z-index: 1;
+
+.od-step {
+    flex: 1;
+    text-align: center;
+    position: relative;
+    z-index: 1;
 }
+
+.od-step p { font-size: 13px; font-weight: 600; color: #333; margin: 0 0 5px 0; }
+
+/* Định dạng Icon để đè lên đường kẻ */
+.od-step .od-icon {
+    display: inline-flex; justify-content: center; align-items: center;
+    width: 48px; height: 48px; background: #ffffff;
+    border-radius: 50%; position: relative; z-index: 2;
+    margin: 0 auto 10px auto; border: 2px solid #e5e7eb; color: #9ca3af;
+    transition: all 0.3s ease;
+}
+
+.od-step.active .od-icon {
+    border-color: #8b5cf6; background-color: #8b5cf6; color: #ffffff;
+}
+
+/* 1. Đường kẻ nền xám (Chưa chạy tới) */
+/* Cắt bớt 68px để chừa khoảng hở cho 2 icon, tuyệt đối không đâm xuyên */
+.od-step:not(:first-child)::before {
+    content: ''; position: absolute;
+    top: 24px; left: calc(-50% + 34px);
+    width: calc(100% - 68px); height: 4px;
+    background-color: #e5e7eb; z-index: 0; border-radius: 2px;
+}
+
+/* 2. Đường kẻ màu tím (Các đoạn đã hoàn thành - lưu lại vĩnh viễn) */
+.od-step.active:not(:first-child)::after {
+    content: ''; position: absolute;
+    top: 24px; left: calc(-50% + 34px);
+    width: calc(100% - 68px); height: 4px;
+    background-color: #8b5cf6; z-index: 1; border-radius: 2px;
+}
+
+/* ===== 3. HIỆU ỨNG CHẠY LIÊN TỤC (Ánh sáng chảy) ===== */
+/* Áp dụng vệt sáng gradient chạy liên tục trên đoạn mới nhất */
+.od-step.active:not(:has(~ .od-step.active)):not(:first-child)::after {
+    width: calc(100% - 68px); /* Lấp đầy khoảng trống ngay lập tức */
+    background: linear-gradient(90deg, #8b5cf6 0%, #e9d5ff 50%, #8b5cf6 100%);
+    background-size: 200% 100%;
+    animation: runContinuous 1.5s linear infinite; /* Chạy liên tục vô hạn */
+    z-index: 1;
+}
+
+@keyframes runContinuous {
+    0% { background-position: 200% center; }
+    100% { background-position: 0% center; }
+}
+
+/* ===== 4. HIỆU ỨNG TỎA SÁNG LIÊN TỤC CHO ICON ===== */
+/* Làm cho icon của trạng thái hiện hành nhấp nháy phát sáng nhẹ */
+.od-step.active:not(:has(~ .od-step.active)) .od-icon {
+    animation: pulseContinuous 2s infinite; /* Nhịp đập vô hạn */
+}
+
+@keyframes pulseContinuous {
+    0% { box-shadow: 0 0 0 0 rgba(139, 92, 246, 0.5); transform: scale(1); }
+    70% { box-shadow: 0 0 0 12px rgba(139, 92, 246, 0); transform: scale(1.05); }
+    100% { box-shadow: 0 0 0 0 rgba(139, 92, 246, 0); transform: scale(1); }
+}
+
 .od-step { text-align: center; width: 25%; position: relative; z-index: 2; }
 .od-icon {
     width: 44px; height: 44px; background: #f0f0f0; border-radius: 50%; display: flex; align-items: center; 
@@ -3264,13 +3371,97 @@ html {
 .od-address h3 { font-size: 16px; margin-bottom: 15px; }
 .od-address p { font-size: 14px; color: #555; margin: 5px 0; line-height: 1.5; }
 
-.od-timeline { width: 60%; position: relative; padding-left: 20px; border-left: 2px solid #eee; }
-.tl-row { display: flex; align-items: center; margin-bottom: 25px; position: relative; }
-.tl-time { width: 130px; font-size: 13px; color: #777; }
-.tl-dot {
-    position: absolute; left: -31px; width: 20px; height: 20px; background: #eee; border-radius: 50%;
-    display: flex; align-items: center; justify-content: center; color: #999; font-size: 10px; border: 4px solid #fff;
+/* =========================================
+   LỊCH SỬ ĐƠN HÀNG (TIMELINE CHUẨN)
+   ========================================= */
+.od-timeline { 
+    width: 60%; 
+    display: flex; 
+    flex-direction: column; 
 }
-.tl-desc { font-size: 14px; color: #444; margin-left: 10px; }
+
+.tl-row { 
+    display: flex; 
+    align-items: flex-start; 
+    position: relative; 
+    padding-bottom: 30px; 
+}
+.tl-row:last-child { padding-bottom: 0; }
+
+/* 1. Cố định Trục Thời Gian (Ép cứng 140px để không sụp khi rỗng) */
+.tl-time { 
+    width: 140px; 
+    flex-shrink: 0; 
+    font-size: 13px; 
+    color: #777; 
+    text-align: right; 
+    padding-right: 25px; 
+    line-height: 1.4;
+    min-height: 20px; 
+}
+
+/* 2. Cố định Trục Chấm Tròn (Nằm chính xác ở mốc 140px) */
+.tl-dot {
+    position: absolute; 
+    left: 140px; 
+    transform: translateX(-50%); 
+    top: -2px;
+    width: 24px; 
+    height: 24px; 
+    background: #e5e7eb; 
+    border-radius: 50%;
+    display: flex; 
+    align-items: center; 
+    justify-content: center; 
+    color: #999; 
+    font-size: 10px; 
+    border: 4px solid #fff; 
+    z-index: 2;
+}
+
+/* 3. Cố định Trục Đường Kẻ (Nối từ mốc 140px thẳng xuống) */
+.tl-row:not(:last-child)::after {
+    content: ''; 
+    position: absolute; 
+    left: 140px; 
+    transform: translateX(-50%); 
+    top: 22px; 
+    bottom: -2px; 
+    width: 2px; 
+    background: #e5e7eb; 
+    z-index: 1;
+}
+
+/* Khối Nội dung */
+.tl-desc { 
+    flex: 1; 
+    font-size: 14px; 
+    color: #444; 
+    padding-left: 25px; 
+    line-height: 1.4; 
+}
+
+/* Đổi màu khi đạt trạng thái */
 .tl-row.active .tl-dot { background: #7c3aed; color: #fff; }
-.tl-row.active .tl-desc { font-weight: bold; color: #111; }
+.tl-row.active .tl-desc, .tl-row.active .tl-time { font-weight: 700; color: #111; }
+
+/* =========================================
+   HỆ THỐNG THÔNG BÁO TOAST (GLOBAL - ĐỒNG BỘ MÀU)
+   ========================================= */
+#toast-container { position: fixed; top: 20px; right: 20px; z-index: 99999; display: flex; flex-direction: column; gap: 12px; }
+.custom-toast { display: flex; align-items: center; background: #fff; border-radius: 4px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); padding: 16px; min-width: 320px; max-width: 400px; animation: slideInRight 0.4s ease forwards; position: relative; overflow: hidden; }
+.custom-toast.success { border-left: 4px solid #ff6600; }
+.custom-toast.error   { border-left: 4px solid #dc3545; }
+.custom-toast.warning { border-left: 4px solid #ffcc00; }
+.toast-icon { font-size: 24px; margin-right: 16px; }
+.custom-toast.success .toast-icon { color: #ff6600; }
+.custom-toast.error .toast-icon   { color: #dc3545; }
+.custom-toast.warning .toast-icon { color: #ffcc00; }
+.toast-content { flex: 1; text-align: left; }
+.toast-title { font-weight: 600; font-size: 15px; color: #002347; margin-bottom: 4px; margin-top: 0;}
+.toast-msg { font-size: 14px; color: #666; line-height: 1.4; margin: 0; }
+.toast-close { font-size: 20px; color: #aaa; cursor: pointer; margin-left: 15px; transition: 0.2s; font-weight: bold; }
+.toast-close:hover { color: #333; }
+@keyframes slideInRight { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+@keyframes fadeOutToast { from { transform: translateX(0); opacity: 1; } to { transform: translateX(100%); opacity: 0; } }
+

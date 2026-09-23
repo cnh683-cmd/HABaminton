@@ -15,15 +15,12 @@ public class LogoutServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         
-        // Lấy session hiện tại
         HttpSession session = request.getSession(false);
         
-        // Nếu session tồn tại, tiến hành hủy (xóa dữ liệu user)
         if (session != null) {
             session.invalidate();
         }
         
-        // Chuyển hướng người dùng về lại trang chủ của khách vãng lai
         response.sendRedirect("index.jsp");
     }
 }

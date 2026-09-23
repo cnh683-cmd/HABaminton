@@ -9,7 +9,6 @@ public class DBContext {
 
     public DBContext() {
         try {
-            // Thay "sa" và "123456" bằng tài khoản/mật khẩu SQL Server của bạn
             String user = "sa";
             String pass = "123456";
             String url = "jdbc:sqlserver://localhost:1433;databaseName=HABadminton;encrypt=true;trustServerCertificate=true";
@@ -22,7 +21,6 @@ public class DBContext {
         }
     }
     
-    // Hàm test nhanh kết nối (Chuột phải file -> Run File)
     public static void main(String[] args) {
         new DBContext();
     }

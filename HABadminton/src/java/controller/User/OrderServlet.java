@@ -21,17 +21,14 @@ public class OrderServlet extends HttpServlet {
         HttpSession session = request.getSession();
         User user = (User) session.getAttribute("user");
         
-        // Bắt buộc đăng nhập
         if (user == null) {
             response.sendRedirect("login.jsp");
             return;
         }
         
-        // Lấy danh sách đơn hàng theo email
         OrderDAO dao = new OrderDAO();
         List<Order> userOrders = dao.getOrdersByEmail(user.getEmail());
         
-        // SỬA Ở ĐÂY: Đổi "orders" thành "listOrders" để khớp với orders.jsp
         request.setAttribute("listOrders", userOrders);
         request.getRequestDispatcher("orders.jsp").forward(request, response);
     }

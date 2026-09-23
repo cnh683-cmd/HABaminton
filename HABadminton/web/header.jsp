@@ -16,7 +16,7 @@
             countOrders = listO.size();
             for(model.Order o : listO) {
                 if(o.getUserDaXem() == 0) {
-                    hasNewUpdate = true; // Phát hiện có đơn chưa xem
+                    hasNewUpdate = true; 
                     break;
                 }
             }
@@ -179,7 +179,7 @@
                 </c:otherwise>
             </c:choose>
             
-            <!-- Icon Đơn hàng (Kèm chấm nhấp nháy nếu có thông báo) -->
+            <!-- Icon Đơn hàng -->
             <a href="orders" class="icon-circle">
                 <i class="fa-solid fa-clipboard-list"></i>
                 <c:if test="${hasNewUpdate}"> 
@@ -187,7 +187,7 @@
                 </c:if>
             </a>
             
-            <!-- Icon Giỏ hàng (Kèm số đếm như cũ) -->
+            <!-- Icon Giỏ hàng -->
             <a href="#" class="icon-circle" onclick="toggleCartSidebar()">
                 <i class="fa-solid fa-cart-shopping"></i>
                 <span class="cart-badge" id="cartBadge"></span>
@@ -319,3 +319,45 @@
         </script>
     </div>
 </header>
+
+<!-- ========================================== -->
+<!-- HỆ THỐNG TOAST NOTIFICATION CHUYÊN NGHIỆP  -->
+<!-- ========================================== -->
+<script>
+    function showToast(type, title, message) {
+        let container = document.getElementById('toast-container');
+        if (!container) {
+            container = document.createElement('div');
+            container.id = 'toast-container';
+            document.body.appendChild(container);
+        }
+        const toast = document.createElement('div');
+        toast.className = 'custom-toast ' + type;
+        let iconClass = 'fa-circle-check';
+        if (type === 'error') iconClass = 'fa-circle-exclamation';
+        if (type === 'warning') iconClass = 'fa-triangle-exclamation';
+
+        toast.innerHTML = 
+            '<div class="toast-icon"><i class="fa-solid ' + iconClass + '"></i></div>' +
+            '<div class="toast-content">' +
+                '<div class="toast-title">' + title + '</div>' +
+                '<div class="toast-msg">' + message + '</div>' +
+            '</div>' +
+            '<div class="toast-close" onclick="this.parentElement.remove()">&times;</div>';
+            
+        container.appendChild(toast);
+        setTimeout(() => {
+            toast.style.animation = 'fadeOutToast 0.4s ease forwards';
+            setTimeout(() => toast.remove(), 400); 
+        }, 3500);
+    }
+</script>
+
+<c:if test="${not empty sessionScope.msgSuccess}">
+    <script>document.addEventListener("DOMContentLoaded", function() { showToast('success', 'Thành công', '${sessionScope.msgSuccess}'); });</script>
+    <c:remove var="msgSuccess" scope="session"/>
+</c:if>
+<c:if test="${not empty sessionScope.msgError}">
+    <script>document.addEventListener("DOMContentLoaded", function() { showToast('error', 'Lỗi', '${sessionScope.msgError}'); });</script>
+    <c:remove var="msgError" scope="session"/>
+</c:if>

@@ -33,7 +33,6 @@ public class ProcessCheckoutServlet extends HttpServlet {
         String paymentMethod = request.getParameter("paymentMethod");
         String note = request.getParameter("note");
         
-        // ĐÃ FIX: Nhận thêm mã sản phẩm (productId)
         String[] productIds = request.getParameterValues("productId");
         String[] productNames = request.getParameterValues("productName");
         String[] productQtys = request.getParameterValues("productQty");
@@ -52,7 +51,6 @@ public class ProcessCheckoutServlet extends HttpServlet {
                 OrderDetail detail = new OrderDetail(name, qty, price);
                 detail.setHinhAnh(image);
                 
-                // ĐÃ FIX: Lấy mã sản phẩm (MaSP) lưu vào model
                 if (productIds != null && productIds.length > i) {
                     detail.setMaSP(productIds[i]);
                 }

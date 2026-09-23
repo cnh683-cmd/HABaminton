@@ -28,7 +28,7 @@
             </div>
         </section>
 
-        <!-- 2. VỢT CẦU LÔNG (Thêm class "reveal" vào đây) -->
+        <!-- 2. VỢT CẦU LÔNG  -->
         <section class="product-section container reveal">
             <div class="section-header">
                 <h2 class="section-title">Vợt cầu lông</h2>
@@ -43,7 +43,6 @@
                 <div class="product-grid">
                     <div class="product-card">
                         <div class="product-img">
-                            <!-- SỬA LINK VÀO CHI TIẾT SẢN PHẨM -->
                             <a href="detail?id=3"><img src="images/Vợt Cầu Lông Victor Auraspeed HS Plus.jpg" alt="Vợt"></a>
                             <a href="detail?id=3" class="btn-detail">XEM CHI TIẾT</a>
                         </div>
@@ -106,7 +105,7 @@
             </div>
         </section>
 
-        <!-- 3. GIÀY CẦU LÔNG (Thêm class "reveal" vào đây) -->
+        <!-- 3. GIÀY CẦU LÔNG -->
         <section class="product-section container reveal">
             <div class="section-header">
                 <h2 class="section-title">Giày cầu lông</h2>
@@ -183,7 +182,7 @@
             </div>
         </section>
 
-        <!-- 4. BALO CẦU LÔNG (Thêm class "reveal" vào đây) -->
+        <!-- 4. BALO CẦU LÔNG -->
         <section class="product-section container reveal">
             <div class="section-header">
                 <h2 class="section-title">Balo cầu lông</h2>
@@ -320,9 +319,6 @@
 
             startAutoSlide();
 
-            // ==========================================
-            // 2. Logic cho Hiệu ứng Lướt hiện (Scroll Reveal)
-            // ==========================================
             document.addEventListener("DOMContentLoaded", function() {
                 const observer = new IntersectionObserver((entries) => {
                     entries.forEach(entry => {

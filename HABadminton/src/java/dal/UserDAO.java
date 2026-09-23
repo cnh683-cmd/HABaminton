@@ -6,7 +6,6 @@ import model.User;
 
 public class UserDAO extends DBContext {
     
-    // Đăng ký tài khoản mới
     public boolean registerUser(String fullname, String email, String password) {
         String sql = "INSERT INTO TAIKHOAN (HoTen, Email, MatKhau) VALUES (?, ?, ?)";
         try {
@@ -22,7 +21,6 @@ public class UserDAO extends DBContext {
         return false;
     }
 
-    // Kiểm tra đăng nhập
     public User checkLogin(String email, String password) {
         String sql = "SELECT * FROM TAIKHOAN WHERE Email = ? AND MatKhau = ?";
         try {
@@ -32,7 +30,6 @@ public class UserDAO extends DBContext {
             ResultSet rs = st.executeQuery();
             
             if (rs.next()) {
-                // 1. Tạo đối tượng User trước
                 User user = new User(
                     rs.getString("HoTen"),
                     rs.getString("Email"),
@@ -42,21 +39,22 @@ public class UserDAO extends DBContext {
                     rs.getString("TinhThanh")
                 );
                 
-                // 2. Gắn thêm Role (Phân quyền) lấy từ Database
                 user.setRole(rs.getInt("Role")); 
                 
-                // 3. Trả về kết quả
+                // BỔ SUNG: LẤY ẢNH ĐẠI DIỆN TỪ DATABASE GÁN VÀO USER
+                user.setAvatar(rs.getString("Avatar")); 
+                
                 return user;
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return null; // Sai tài khoản hoặc mật khẩu
+        return null;
     }
 
-    // Cập nhật hồ sơ cá nhân
     public void updateProfile(User user) {
-        String sql = "UPDATE TAIKHOAN SET HoTen = ?, SDT = ?, DiaChi = ?, QuanHuyen = ?, TinhThanh = ? WHERE Email = ?";
+        // BỔ SUNG: THÊM 'Avatar = ?' VÀO CÂU LỆNH SQL
+        String sql = "UPDATE TAIKHOAN SET HoTen = ?, SDT = ?, DiaChi = ?, QuanHuyen = ?, TinhThanh = ?, Avatar = ? WHERE Email = ?";
         try {
             PreparedStatement st = connection.prepareStatement(sql);
             st.setString(1, user.getHoTen());
@@ -64,7 +62,11 @@ public class UserDAO extends DBContext {
             st.setString(3, user.getDiaChi());
             st.setString(4, user.getQuanHuyen());
             st.setString(5, user.getTinhThanh());
-            st.setString(6, user.getEmail());
+            
+            // BỔ SUNG: TRUYỀN DỮ LIỆU AVATAR VÀO SQL
+            st.setString(6, user.getAvatar());
+            st.setString(7, user.getEmail()); // Email bị đẩy xuống vị trí số 7
+            
             st.executeUpdate();
         } catch (Exception e) {
             e.printStackTrace();

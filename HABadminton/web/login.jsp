@@ -15,7 +15,6 @@
         <form action="loginServlet" method="POST" class="login__form">
             <h1 class="login__title">Đăng nhập</h1>
             
-            <!-- HIỂN THỊ THÔNG BÁO LỖI -->
             <c:if test="${not empty error}">
                 <p style="color: #dc3545; text-align: center; margin-bottom: 15px; font-weight: bold; font-size: 14px;">
                     ${error}

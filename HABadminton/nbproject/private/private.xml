@@ -6,7 +6,6 @@
             <file>file:/D:/netbeans/NetBeansProjects/BaiTapLonJava/HABadminton/src/java/controller/User/ProcessCheckoutServlet.java</file>
             <file>file:/D:/netbeans/NetBeansProjects/BaiTapLonJava/HABadminton/web/header.jsp</file>
             <file>file:/D:/netbeans/NetBeansProjects/BaiTapLonJava/HABadminton/src/java/dal/SanPhamDAO.java</file>
-            <file>file:/D:/netbeans/NetBeansProjects/BaiTapLonJava/HABadminton/web/css/style.css</file>
             <file>file:/D:/netbeans/NetBeansProjects/BaiTapLonJava/HABadminton/web/checkout.jsp</file>
             <file>file:/D:/netbeans/NetBeansProjects/BaiTapLonJava/HABadminton/web/WEB-INF/web.xml</file>
             <file>file:/D:/netbeans/NetBeansProjects/BaiTapLonJava/HABadminton/web/category.jsp</file>
@@ -39,6 +38,17 @@
             <file>file:/D:/netbeans/NetBeansProjects/BaiTapLonJava/HABadminton/src/java/controller/User/DetailServlet.java</file>
             <file>file:/D:/netbeans/NetBeansProjects/BaiTapLonJava/HABadminton/src/java/controller/User/CategoryServlet.java</file>
             <file>file:/D:/netbeans/NetBeansProjects/BaiTapLonJava/HABadminton/web/detail.jsp</file>
+            <file>file:/D:/netbeans/NetBeansProjects/BaiTapLonJava/HABadminton/src/java/model/SanPham.java</file>
+            <file>file:/D:/netbeans/NetBeansProjects/BaiTapLonJava/HABadminton/src/java/dal/ReviewDAO.java</file>
+            <file>file:/D:/netbeans/NetBeansProjects/BaiTapLonJava/HABadminton/src/java/controller/User/SubmitReviewServlet.java</file>
+            <file>file:/D:/netbeans/NetBeansProjects/BaiTapLonJava/HABadminton/src/java/model/Review.java</file>
+            <file>file:/D:/netbeans/NetBeansProjects/BaiTapLonJava/HABadminton/web/footer.jsp</file>
+            <file>file:/D:/netbeans/NetBeansProjects/BaiTapLonJava/HABadminton/src/java/dal/DBContext.java</file>
+            <file>file:/D:/netbeans/NetBeansProjects/BaiTapLonJava/HABadminton/src/java/momo/HMACUtil.java</file>
+            <file>file:/D:/netbeans/NetBeansProjects/BaiTapLonJava/HABadminton/src/java/momo/MoMoConfig.java</file>
+            <file>file:/D:/netbeans/NetBeansProjects/BaiTapLonJava/HABadminton/web/admin/admin-reviews.jsp</file>
+            <file>file:/D:/netbeans/NetBeansProjects/BaiTapLonJava/HABadminton/src/java/controller/Admin/AdminReviewServlet.java</file>
+            <file>file:/D:/netbeans/NetBeansProjects/BaiTapLonJava/HABadminton/web/css/style.css</file>
         </group>
     </open-files>
 </project-private>

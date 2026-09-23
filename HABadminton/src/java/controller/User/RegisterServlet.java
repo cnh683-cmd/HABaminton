@@ -20,7 +20,7 @@ public class RegisterServlet extends HttpServlet {
         String password = request.getParameter("password");
         
         UserDAO dao = new UserDAO();
-        dao.registerUser(fullname, email, password); // Lưu vào SQL
+        dao.registerUser(fullname, email, password);
         
         response.sendRedirect("login.jsp");
     }

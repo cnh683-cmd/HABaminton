@@ -21,6 +21,7 @@ public class Order {
     private String ghiChu;
     private int userDaXem;
     private String lyDoHuy;
+    private String avatar;
 
     public Order() {
     }
@@ -73,4 +74,6 @@ public class Order {
     public void setUserDaXem(int userDaXem) { this.userDaXem = userDaXem; }
     public String getLyDoHuy() { return lyDoHuy; }
     public void setLyDoHuy(String lyDoHuy) { this.lyDoHuy = lyDoHuy; }
+    public String getAvatar() { return avatar; }
+    public void setAvatar(String avatar) { this.avatar = avatar; }
 }

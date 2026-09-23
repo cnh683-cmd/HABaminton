@@ -17,7 +17,7 @@ public class MoMoReturnServlet extends HttpServlet {
             throws ServletException, IOException {
         
         String resultCode = request.getParameter("resultCode");
-        System.out.println(">>> MOMO TRẢ KẾT QUẢ VỀ: " + resultCode); // In ra để kiểm tra
+        System.out.println(">>> MOMO TRẢ KẾT QUẢ VỀ: " + resultCode);
         
         Order pendingOrder = (Order) request.getSession().getAttribute("pendingOrder");
         
@@ -28,7 +28,6 @@ public class MoMoReturnServlet extends HttpServlet {
                 OrderDAO dao = new OrderDAO();
                 dao.insertOrder(pendingOrder);
                 
-                // Ép biến isSuccess thành true (Gửi cả kiểu boolean lẫn chuỗi để phòng hờ)
                 request.setAttribute("isSuccess", true); 
                 request.setAttribute("success_string", "true");
             } else {

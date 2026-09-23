@@ -30,7 +30,6 @@ public class MoMoPaymentServlet extends HttpServlet {
         String orderId = String.valueOf(System.currentTimeMillis()); 
         String requestId = String.valueOf(System.currentTimeMillis());
         
-        // 1. Tạo chuỗi ký tự theo đúng chuẩn MoMo yêu cầu
         String rawSignature = "accessKey=" + MoMoConfig.ACCESS_KEY +
                 "&amount=" + amount +
                 "&extraData=" +
@@ -43,10 +42,8 @@ public class MoMoPaymentServlet extends HttpServlet {
                 "&requestType=captureWallet";
 
         try {
-            // 2. Mã hóa chữ ký
             String signature = HMACUtil.HmacSHA256(rawSignature, MoMoConfig.SECRET_KEY);
 
-            // 3. Đóng gói dữ liệu thành JSON
             JsonObject jsonRequest = new JsonObject();
             jsonRequest.addProperty("partnerCode", MoMoConfig.PARTNER_CODE);
             jsonRequest.addProperty("partnerName", "HA Badminton");
@@ -62,7 +59,6 @@ public class MoMoPaymentServlet extends HttpServlet {
             jsonRequest.addProperty("requestType", "captureWallet");
             jsonRequest.addProperty("signature", signature);
 
-            // 4. Gửi HTTP POST lên Server MoMo
             URL url = new URL(MoMoConfig.API_ENDPOINT);
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
             connection.setRequestMethod("POST");
@@ -74,7 +70,6 @@ public class MoMoPaymentServlet extends HttpServlet {
                 os.write(input, 0, input.length);
             }
 
-            // 5. Đọc phản hồi từ MoMo
             BufferedReader br = new BufferedReader(new InputStreamReader(connection.getInputStream(), StandardCharsets.UTF_8));
             StringBuilder responseBuilder = new StringBuilder();
             String line;
@@ -82,7 +77,6 @@ public class MoMoPaymentServlet extends HttpServlet {
                 responseBuilder.append(line);
             }
             
-            // Lấy đường dẫn thanh toán và chuyển hướng người dùng
             JsonObject jsonResponse = new Gson().fromJson(responseBuilder.toString(), JsonObject.class);
             String payUrl = jsonResponse.get("payUrl").getAsString();
             
