@@ -7,7 +7,7 @@
     <meta charset="UTF-8">
     <title>Quản lý Đơn hàng - Admin</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/admin-style.css?v=7">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/admin-style.css?v=8">
     
     <style>
         .order-stats-wrapper { display: grid; grid-template-columns: repeat(6, 1fr); gap: 15px; margin-bottom: 25px; }
@@ -16,14 +16,17 @@
             gap: 20px !important; 
             align-items: center;
         }
-        .ord-products {
-            max-height: 120px; 
-            overflow-y: auto; 
-            padding-right: 10px;
-        }
+        .ord-products { max-height: 120px; overflow-y: auto; padding-right: 10px; }
         .ord-products::-webkit-scrollbar { width: 4px; }
         .ord-products::-webkit-scrollbar-track { background: transparent; }
         .ord-products::-webkit-scrollbar-thumb { background: var(--border-dark); border-radius: 4px; }
+        
+        /* Hiệu ứng viền đỏ cho đơn hàng đã hủy (Đã được dời về đúng vị trí) */
+        .canceled-row {
+            border: 1px dashed var(--danger) !important;
+            background-color: rgba(220, 53, 69, 0.08) !important; 
+            border-radius: 8px;
+        }
     </style>
 </head>
 <body>
@@ -110,11 +113,11 @@
             </div>
 
             <c:forEach items="${listOrders}" var="o">
-                <div class="ord-row" data-status="${o.trangThai}">
+                <div class="ord-row ${o.trangThai == 0 ? 'canceled-row' : ''}" data-status="${o.trangThai}">
                     <!-- Mã đơn -->
-                    <div class="ord-col ord-id">#${o.maDonHang}</div>
+                    <div class="ord-col ord-id" style="${o.trangThai == 0 ? 'color: var(--danger); font-weight: bold;' : ''}">#${o.maDonHang}</div>
                     
-                    <!-- Khách hàng (Đã fix gọn gàng ảnh và tên đi chung một khối) -->
+                    <!-- Khách hàng (XÓA BỎ LẶP LẠI TÊN) -->
                     <div class="ord-col ord-customer" style="display: flex; align-items: center; gap: 12px;">
                         <c:choose>
                             <c:when test="${not empty o.avatar}">
@@ -202,7 +205,6 @@
                     </div>
                     <div data-field="ghichu">${not empty o.ghiChu ? o.ghiChu : 'Không có ghi chú'}</div>
                     <div data-field="tong"><fmt:formatNumber value="${o.tongTien}" pattern="#,###"/>đ</div>
-                    
                     <div data-field="voucher">
                         <c:choose>
                             <c:when test="${not empty o.maVoucher}">
@@ -334,9 +336,23 @@
             
             if(oldStatus === newStatus) return;
 
+            let reason = "";
+            if (newStatus === '0') {
+                reason = prompt("Nhập lý do hủy đơn hàng này:");
+                if (reason === null || reason.trim() === "") {
+                    alert("Thao tác thất bại: Bạn phải nhập lý do hủy đơn!");
+                    selectElement.value = oldStatus; 
+                    return;
+                }
+            }
+
             selectElement.disabled = true;
             let timestamp = new Date().getTime();
             let url = '${pageContext.request.contextPath}/admin-orders?action=updateStatus&id=' + maDon + '&status=' + newStatus + '&t=' + timestamp;
+            
+            if (newStatus === '0') {
+                url += '&reason=' + encodeURIComponent(reason);
+            }
 
             fetch(url, { method: 'GET', cache: 'no-store' })
             .then(response => {
@@ -347,6 +363,17 @@
                     else if(newStatus == '2') selectElement.style.color = '#8B5CF6';
                     else if(newStatus == '3') selectElement.style.color = 'var(--success)';
                     else if(newStatus == '0') selectElement.style.color = 'var(--danger)';
+
+                    let idCol = row.querySelector('.ord-id');
+                    if (newStatus === '0') {
+                        idCol.style.color = 'var(--danger)';
+                        idCol.style.fontWeight = 'bold';
+                        row.classList.add('canceled-row'); 
+                    } else {
+                        idCol.style.color = ''; 
+                        idCol.style.fontWeight = '';
+                        row.classList.remove('canceled-row'); 
+                    }
 
                     row.setAttribute('data-status', newStatus);
                     let oldCard = document.querySelector('.' + statusMap[oldStatus] + ' .st-value');
@@ -360,7 +387,6 @@
                     if (dataDiv) {
                         let pttt = dataDiv.querySelector('[data-field="pttt"]').innerText.trim().toUpperCase();
                         let ttttField = dataDiv.querySelector('[data-field="tttt"]');
-                        
                         if (pttt.includes('MOMO')) {
                             ttttField.innerHTML = '<span style="color: var(--success); font-weight: 600;">Đã thanh toán (Ví MoMo)</span>';
                         } else {
@@ -369,6 +395,11 @@
                             } else {
                                 ttttField.innerHTML = '<span style="color: var(--danger); font-weight: 600;">Chưa thanh toán (COD)</span>';
                             }
+                        }
+                        
+                        if (newStatus === '0') {
+                            dataDiv.querySelector('[data-field="ghichu"]').innerHTML = 
+                                '<span style="color: var(--danger); font-weight: bold;"><i class="fa-solid fa-circle-exclamation"></i> Đơn hàng đã bị hủy. Lý do: ' + reason + '</span>';
                         }
                     }
                 } else {
@@ -393,7 +424,7 @@
             document.getElementById('md-diachi').innerText = dataDiv.querySelector('[data-field="diachi"]').innerText;
             document.getElementById('md-pttt').innerText = dataDiv.querySelector('[data-field="pttt"]').innerText;
             document.getElementById('md-tttt').innerHTML = dataDiv.querySelector('[data-field="tttt"]').innerHTML;
-            document.getElementById('md-ghichu').innerText = dataDiv.querySelector('[data-field="ghichu"]').innerText;
+            document.getElementById('md-ghichu').innerHTML = dataDiv.querySelector('[data-field="ghichu"]').innerHTML;
             document.getElementById('md-tong').innerText = dataDiv.querySelector('[data-field="tong"]').innerText;
             document.getElementById('md-sanpham').innerHTML = dataDiv.querySelector('[data-field="sanpham"]').innerHTML;
             document.getElementById('md-voucher').innerHTML = dataDiv.querySelector('[data-field="voucher"]').innerHTML;

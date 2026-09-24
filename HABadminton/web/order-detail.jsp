@@ -183,6 +183,16 @@
                     </div>
                     
                     <div class="od-timeline">
+                        <!-- 1. HIỂN THỊ KHI ĐƠN HÀNG BỊ HỦY (Trạng thái = 0) -->
+                        <c:if test="${order.trangThai == 0}">
+                            <div class="tl-row active">
+                                <span class="tl-time" style="color: #dc3545; font-weight: 700;">Đã hủy</span>
+                                <div class="tl-dot" style="background: #dc3545; color: #fff; border-color: #fff;"><i class="fa-solid fa-ban"></i></div>
+                                <span class="tl-desc" style="color: #dc3545; font-weight: 700;">Đơn hàng đã bị hủy</span>
+                            </div>
+                        </c:if>
+
+                        <!-- 2. Chỉ hiện khi trạng thái là 3 (Đã giao hàng) -->
                         <c:if test="${order.trangThai == 3}">
                             <div class="tl-row active">
                                 <span class="tl-time">
@@ -193,6 +203,7 @@
                             </div>
                         </c:if>
                         
+                        <!-- 3. Chỉ hiện khi trạng thái là 2 (Đang giao) hoặc 3 (Đã giao) -->
                         <c:if test="${order.trangThai == 2 || order.trangThai == 3}">
                             <div class="tl-row">
                                 <span class="tl-time">
@@ -203,6 +214,7 @@
                             </div>
                         </c:if>
                         
+                        <!-- 4. Chỉ hiện khi trạng thái là 4 (Tiếp nhận), 2 (Đang giao) hoặc 3 (Đã giao) -->
                         <c:if test="${order.trangThai == 4 || order.trangThai == 2 || order.trangThai == 3}">
                             <div class="tl-row">
                                 <span class="tl-time">
@@ -213,7 +225,8 @@
                             </div>
                         </c:if>
                         
-                        <div class="tl-row">
+                        <!-- 5. Luôn hiện (Đã đặt hàng) - Sẽ phát sáng nếu đơn đang ở bước Chờ xác nhận -->
+                        <div class="tl-row ${order.trangThai == 1 ? 'active' : ''}">
                             <span class="tl-time"><fmt:formatDate value="${order.ngayDat}" pattern="dd-MM-yyyy HH:mm" /></span>
                             <div class="tl-dot"><i class="fa-solid fa-receipt"></i></div>
                             <span class="tl-desc">Đơn hàng đã được đặt</span>

@@ -18,26 +18,41 @@ public class AdminOrderServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         
+        // Bắt buộc cấu hình UTF-8 để nhận Lý do hủy tiếng Việt không bị lỗi font
+        request.setCharacterEncoding("UTF-8");
+        response.setCharacterEncoding("UTF-8");
+        
         OrderDAO dao = new OrderDAO();
         HttpSession session = request.getSession();
         String action = request.getParameter("action");
         
-        // 1. XỬ LÝ LỆNH CẬP NHẬT TRẠNG THÁI (UPDATE STATUS)
+        // 1. XỬ LÝ LỆNH CẬP NHẬT TRẠNG THÁI VÀ HỦY ĐƠN
         if ("updateStatus".equals(action)) {
             String id = request.getParameter("id");
             String statusStr = request.getParameter("status");
             
             try {
                 int newStatus = Integer.parseInt(statusStr);
-                // GỌI HÀM CẬP NHẬT DATABASE Ở ĐÂY
-                boolean isUpdated = dao.updateOrderStatus(id, newStatus); 
+                boolean isSuccess = false;
                 
-                if (isUpdated) {
-                    // Trả về mã 200 OK cho Fetch API biết là thành công
+                // NẾU TRẠNG THÁI = 0 (HỦY ĐƠN) -> GỌI HÀM cancelOrder KÈM LÝ DO
+                if (newStatus == 0) {
+                    String reason = request.getParameter("reason");
+                    if (reason == null || reason.trim().isEmpty()) {
+                        reason = "Hệ thống / Admin đã hủy đơn hàng";
+                    }
+                    dao.cancelOrder(id, reason);
+                    isSuccess = true; 
+                } 
+                // NẾU LÀ CÁC TRẠNG THÁI KHÁC -> CẬP NHẬT BÌNH THƯỜNG
+                else {
+                    isSuccess = dao.updateOrderStatus(id, newStatus); 
+                }
+                
+                if (isSuccess) {
                     response.setStatus(HttpServletResponse.SC_OK);
                     response.getWriter().write("success");
                 } else {
-                    // Trả về lỗi 500 nếu update thất bại
                     response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
                     response.getWriter().write("error");
                 }
@@ -45,7 +60,7 @@ public class AdminOrderServlet extends HttpServlet {
                 response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
                 e.printStackTrace();
             }
-            return; // Dừng luồng ở đây, không render lại trang JSP
+            return; // Trả dữ liệu về cho Fetch API, không load lại trang
         }
         
         // 2. XỬ LÝ LỆNH XÓA (DELETE)
