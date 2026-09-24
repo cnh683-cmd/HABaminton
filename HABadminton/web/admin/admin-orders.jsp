@@ -7,7 +7,7 @@
     <meta charset="UTF-8">
     <title>Quản lý Đơn hàng - Admin</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/admin-style.css?v=8">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/admin-style.css?v=10">
     
     <style>
         .order-stats-wrapper { display: grid; grid-template-columns: repeat(6, 1fr); gap: 15px; margin-bottom: 25px; }
@@ -21,7 +21,7 @@
         .ord-products::-webkit-scrollbar-track { background: transparent; }
         .ord-products::-webkit-scrollbar-thumb { background: var(--border-dark); border-radius: 4px; }
         
-        /* Hiệu ứng viền đỏ cho đơn hàng đã hủy (Đã được dời về đúng vị trí) */
+        /* Hiệu ứng viền đỏ cho đơn hàng đã hủy */
         .canceled-row {
             border: 1px dashed var(--danger) !important;
             background-color: rgba(220, 53, 69, 0.08) !important; 
@@ -89,9 +89,12 @@
         </div>
 
         <!-- 2. THANH LỌC TỐC ĐỘ CAO -->
-        <div class="filter-bar" style="margin-bottom: 20px;">
-            <input type="text" id="searchBox" class="filter-input" placeholder="Nhập mã đơn, tên khách hàng..." onkeyup="filterTable()">
-            <select id="statusBox" class="filter-select" onchange="filterTable()">
+        <div class="filter-bar" style="margin-bottom: 20px; align-items: center;">
+            <!-- Xóa onkeyup -->
+            <input type="text" id="searchBox" class="filter-input" placeholder="Nhập mã đơn, tên khách hàng...">
+            
+            <!-- Xóa onchange -->
+            <select id="statusBox" class="filter-select">
                 <option value="all">Tất cả trạng thái</option>
                 <option value="1">Chờ xử lý</option>
                 <option value="4">Đã tiếp nhận</option>
@@ -99,6 +102,14 @@
                 <option value="3">Đã giao thành công</option>
                 <option value="0">Đã hủy</option>
             </select>
+            
+            <!-- Nút gọi hàm lọc -->
+            <button class="btn-search" onclick="filterTable()">
+                <i class="fa-solid fa-magnifying-glass"></i> Tìm kiếm
+            </button>
+            <button class="btn-reset" onclick="resetFilter()" title="Làm mới bộ lọc">
+                <i class="fa-solid fa-arrow-rotate-right" style="margin: 0;"></i>
+            </button>
         </div>
 
         <!-- 3. DANH SÁCH ĐƠN HÀNG -->
@@ -117,7 +128,7 @@
                     <!-- Mã đơn -->
                     <div class="ord-col ord-id" style="${o.trangThai == 0 ? 'color: var(--danger); font-weight: bold;' : ''}">#${o.maDonHang}</div>
                     
-                    <!-- Khách hàng (XÓA BỎ LẶP LẠI TÊN) -->
+                    <!-- Khách hàng -->
                     <div class="ord-col ord-customer" style="display: flex; align-items: center; gap: 12px;">
                         <c:choose>
                             <c:when test="${not empty o.avatar}">
@@ -204,6 +215,8 @@
                         </c:choose>
                     </div>
                     <div data-field="ghichu">${not empty o.ghiChu ? o.ghiChu : 'Không có ghi chú'}</div>
+                    <!-- Dữ liệu Lý do hủy -->
+                    <div data-field="lydohuy">${o.trangThai == 0 ? (not empty o.lyDoHuy ? o.lyDoHuy : 'Không có lý do cụ thể') : ''}</div>
                     <div data-field="tong"><fmt:formatNumber value="${o.tongTien}" pattern="#,###"/>đ</div>
                     <div data-field="voucher">
                         <c:choose>
@@ -278,6 +291,11 @@
                         <span style="margin-bottom: 5px;">Ghi chú của khách:</span> 
                         <span id="md-ghichu" style="font-style: italic; color: var(--warning); text-align: left; font-weight: normal;">...</span>
                     </div>
+                    <!-- KHỐI HIỂN THỊ LÝ DO HỦY (MẶC ĐỊNH ẨN) -->
+                    <div class="om-row-detail" id="md-lydohuy-box" style="display: none; flex-direction: column; text-align: left; margin-top: 10px; padding: 12px; background: rgba(220, 53, 69, 0.1); border-left: 4px solid var(--danger); border-radius: 4px;">
+                        <span style="margin-bottom: 5px; color: var(--danger); font-weight: bold;"><i class="fa-solid fa-circle-exclamation"></i> Đơn hàng đã bị hủy. Lý do:</span> 
+                        <span id="md-lydohuy" style="color: var(--danger); text-align: left; font-weight: normal;">...</span>
+                    </div>
                 </div>
 
                 <div class="om-section">
@@ -328,6 +346,23 @@
             let emptyMsg = document.getElementById("emptyMessage");
             if(emptyMsg) emptyMsg.style.display = hasVisible ? "none" : "block";
         }
+        
+        function resetFilter() {
+            // Xóa rỗng ô tìm kiếm
+            document.getElementById("searchBox").value = "";
+            // Đưa trạng thái về Tất cả
+            document.getElementById("statusBox").value = "all";
+            // Gọi lại hàm lọc để tải lại toàn bộ danh sách ban đầu
+            filterTable();
+        }
+        
+        document.getElementById("searchBox").addEventListener("keypress", function(event) {
+            // Nếu phím được nhấn là phím Enter
+            if (event.key === "Enter") {
+                event.preventDefault(); // Ngăn chặn hành vi mặc định
+                filterTable();          // Thực hiện tìm kiếm
+            }
+        });
 
         function updateOrderStatus(maDon, selectElement) {
             let newStatus = selectElement.value;
@@ -397,9 +432,11 @@
                             }
                         }
                         
+                        // Đẩy lý do hủy mới vào trường dữ liệu ẩn
                         if (newStatus === '0') {
-                            dataDiv.querySelector('[data-field="ghichu"]').innerHTML = 
-                                '<span style="color: var(--danger); font-weight: bold;"><i class="fa-solid fa-circle-exclamation"></i> Đơn hàng đã bị hủy. Lý do: ' + reason + '</span>';
+                            dataDiv.querySelector('[data-field="lydohuy"]').innerText = reason;
+                        } else {
+                            dataDiv.querySelector('[data-field="lydohuy"]').innerText = '';
                         }
                     }
                 } else {
@@ -425,6 +462,17 @@
             document.getElementById('md-pttt').innerText = dataDiv.querySelector('[data-field="pttt"]').innerText;
             document.getElementById('md-tttt').innerHTML = dataDiv.querySelector('[data-field="tttt"]').innerHTML;
             document.getElementById('md-ghichu').innerHTML = dataDiv.querySelector('[data-field="ghichu"]').innerHTML;
+            
+            // Bật/tắt khối lý do hủy dựa trên dữ liệu ẩn
+            let lyDoHuy = dataDiv.querySelector('[data-field="lydohuy"]').innerText.trim();
+            let lyDoHuyBox = document.getElementById('md-lydohuy-box');
+            if (lyDoHuy !== '') {
+                lyDoHuyBox.style.display = 'flex';
+                document.getElementById('md-lydohuy').innerText = lyDoHuy;
+            } else {
+                lyDoHuyBox.style.display = 'none';
+            }
+            
             document.getElementById('md-tong').innerText = dataDiv.querySelector('[data-field="tong"]').innerText;
             document.getElementById('md-sanpham').innerHTML = dataDiv.querySelector('[data-field="sanpham"]').innerHTML;
             document.getElementById('md-voucher').innerHTML = dataDiv.querySelector('[data-field="voucher"]').innerHTML;
