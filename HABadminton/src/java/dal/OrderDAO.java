@@ -11,7 +11,11 @@ public class OrderDAO extends DBContext {
     
     public List<OrderDetail> getOrderDetails(String maDonHang) {
         List<OrderDetail> list = new ArrayList<>();
-        String sql = "SELECT * FROM ChiTietDonHang WHERE MaDonHang = ?";
+        // DÙNG JOIN ĐỂ LẤY TÊN SP VÀ HÌNH ẢNH TỪ BẢNG SANPHAM
+        String sql = "SELECT c.MaSP, c.SoLuong, c.GiaMua, s.TenSP, s.HinhAnh "
+                   + "FROM ChiTietDonHang c "
+                   + "JOIN SANPHAM s ON c.MaSP = s.MaSP "
+                   + "WHERE c.MaDonHang = ?";
         try {
             PreparedStatement st = connection.prepareStatement(sql);
             st.setString(1, maDonHang);
@@ -153,15 +157,15 @@ public class OrderDAO extends DBContext {
             st.executeUpdate();
             
             if (order.getChiTietList() != null && !order.getChiTietList().isEmpty()) {
-                String sqlDetail = "INSERT INTO ChiTietDonHang (MaDonHang, MaSP, TenSP, SoLuong, GiaMua, HinhAnh) VALUES (?, ?, ?, ?, ?, ?)";
+                String sqlDetail = "INSERT INTO ChiTietDonHang (MaDonHang, MaSP, SoLuong, GiaMua) VALUES (?, ?, ?, ?)";
                 PreparedStatement stDetail = connection.prepareStatement(sqlDetail);
                 for (OrderDetail item : order.getChiTietList()) {
                     stDetail.setString(1, order.getMaDonHang());
-                    stDetail.setString(2, item.getMaSP());
-                    stDetail.setString(3, item.getTenSP());
-                    stDetail.setInt(4, item.getSoLuong());
-                    stDetail.setInt(5, item.getGiaMua());
-                    stDetail.setString(6, item.getHinhAnh()); 
+                    
+                    stDetail.setInt(2, Integer.parseInt(item.getMaSP())); 
+                    
+                    stDetail.setInt(3, item.getSoLuong());
+                    stDetail.setInt(4, item.getGiaMua());
                     stDetail.executeUpdate();
                 }
             }

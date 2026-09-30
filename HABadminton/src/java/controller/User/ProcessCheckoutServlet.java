@@ -38,7 +38,11 @@ public class ProcessCheckoutServlet extends HttpServlet {
         String[] productQtys = request.getParameterValues("productQty");
         String[] productPrices = request.getParameterValues("productPrice");
         String[] productImages = request.getParameterValues("productImage"); 
-        String voucherCode = request.getParameter("voucherCode");            
+        String voucherCode = request.getParameter("voucherCode");
+        
+        if (voucherCode != null && voucherCode.trim().isEmpty()) {
+            voucherCode = null; 
+        }
 
         List<OrderDetail> chiTietList = new ArrayList<>();
         if (productNames != null) {

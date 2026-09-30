@@ -8,10 +8,9 @@ import model.Review;
 
 public class ReviewDAO extends DBContext {
     
-    // 1. Thêm đánh giá mới (Giao diện User)
     public boolean insertReview(String maSP, String email, int soSao, String noiDung, boolean anDanh, String hinhAnh, String video) {
-        String sql = "INSERT INTO DanhGia (MaSP, EmailKhachHang, SoSao, NoiDung, AnDanh, SoLuotThich, TrangThai, NgayDG, HinhAnh, Video) "
-                   + "VALUES (?, ?, ?, ?, ?, 0, 1, GETDATE(), ?, ?)";
+        String sql = "INSERT INTO DanhGia (MaSP, MaND, SoSao, NoiDung, AnDanh, SoLuotThich, TrangThai, NgayDG, HinhAnh, Video) "
+                   + "VALUES (?, (SELECT MaND FROM TAIKHOAN WHERE Email = ?), ?, ?, ?, 0, 1, GETDATE(), ?, ?)";
         try {
             PreparedStatement st = connection.prepareStatement(sql);
             st.setString(1, maSP);
@@ -26,15 +25,15 @@ public class ReviewDAO extends DBContext {
         return false;
     }
 
-    // 2. Lấy danh sách đánh giá của 1 sản phẩm (Giao diện User)
-   public List<Review> getReviewsByProduct(String maSP) {
+    public List<Review> getReviewsByProduct(String maSP) {
         List<Review> list = new ArrayList<>();
-        // THÊM t.Avatar VÀO CÂU LỆNH SQL
-        String sql = "SELECT d.*, t.HoTen AS TenKhachHang, t.Avatar "
+        // ĐỔI THÀNH JOIN QUA MaND VÀ LẤY THÊM t.Email TRẢ VỀ
+        String sql = "SELECT d.*, t.HoTen AS TenKhachHang, t.Avatar, t.Email AS EmailKhachHang "
                    + "FROM DanhGia d "
-                   + "JOIN TAIKHOAN t ON d.EmailKhachHang = t.Email "
+                   + "JOIN TAIKHOAN t ON d.MaND = t.MaND "
                    + "WHERE d.MaSP = ? AND d.TrangThai = 1 "
                    + "ORDER BY d.NgayDG DESC";
+        // ... (Phần code dưới ResultSet rs = st.executeQuery(); giữ nguyên hoàn toàn) ...
         try {
             PreparedStatement st = connection.prepareStatement(sql);
             st.setString(1, maSP);
@@ -43,7 +42,7 @@ public class ReviewDAO extends DBContext {
                 Review r = new Review();
                 r.setMaDG(rs.getInt("MaDG"));
                 r.setMaSP(rs.getString("MaSP"));
-                r.setEmailKhachHang(rs.getString("EmailKhachHang"));
+                r.setEmailKhachHang(rs.getString("EmailKhachHang")); // Code này sẽ không bị lỗi nhờ Alias ở trên
                 r.setTenKhachHang(rs.getString("TenKhachHang"));
                 r.setSoSao(rs.getInt("SoSao"));
                 r.setNoiDung(rs.getString("NoiDung"));
@@ -54,15 +53,11 @@ public class ReviewDAO extends DBContext {
                 r.setSoLuotThich(rs.getInt("SoLuotThich"));
                 r.setHinhAnh(rs.getString("HinhAnh"));
                 r.setVideo(rs.getString("Video"));
-                
-                // GÁN AVATAR VÀO OBJECT
                 r.setAvatar(rs.getString("Avatar"));
                 
                 list.add(r);
             }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        } catch (Exception e) { e.printStackTrace(); }
         return list;
     }
 
@@ -73,49 +68,37 @@ public class ReviewDAO extends DBContext {
     // 3. Lấy tất cả đánh giá kèm bộ lọc (Giao diện Admin)
     public List<Review> getAllReviewsForAdmin(String keyword, String star, String status) {
         List<Review> list = new ArrayList<>();
-        // THÊM t.Avatar VÀO CÂU SELECT VÀ JOIN VỚI TAIKHOAN
-        String sql = "SELECT d.*, t.HoTen AS TenKhachHang, t.Avatar, s.TenSP, s.HinhAnh AS HinhAnhSP "
+        // ĐỔI THÀNH JOIN QUA MaND VÀ LẤY THÊM t.Email
+        String sql = "SELECT d.*, t.HoTen AS TenKhachHang, t.Avatar, t.Email AS EmailKhachHang, s.TenSP, s.HinhAnh AS HinhAnhSP "
                    + "FROM DanhGia d "
-                   + "JOIN TAIKHOAN t ON d.EmailKhachHang = t.Email "
+                   + "JOIN TAIKHOAN t ON d.MaND = t.MaND "
                    + "JOIN SanPham s ON d.MaSP = s.MaSP "
                    + "WHERE 1=1 ";
         
-        // Lọc Keyword
+        // ... (Giữ nguyên toàn bộ phần If filter và vòng lặp While) ...
         if (keyword != null && !keyword.trim().isEmpty()) {
             sql += " AND (t.HoTen LIKE ? OR s.TenSP LIKE ? OR d.NoiDung LIKE ?) ";
         }
-        
-        if (star != null && !star.equals("all")) {
-            sql += " AND d.SoSao = " + star;
-        }
-        
+        if (star != null && !star.equals("all")) { sql += " AND d.SoSao = " + star; }
         if (status != null && !status.equals("all")) {
-            if (status.equals("replied")) {
-                sql += " AND d.PhanHoiAdmin IS NOT NULL AND DATALENGTH(d.PhanHoiAdmin) > 0 ";
-            } else if (status.equals("unreplied")) {
-                sql += " AND (d.PhanHoiAdmin IS NULL OR DATALENGTH(d.PhanHoiAdmin) = 0) ";
-            }
+            if (status.equals("replied")) { sql += " AND d.PhanHoiAdmin IS NOT NULL AND DATALENGTH(d.PhanHoiAdmin) > 0 "; } 
+            else if (status.equals("unreplied")) { sql += " AND (d.PhanHoiAdmin IS NULL OR DATALENGTH(d.PhanHoiAdmin) = 0) "; }
         }
         sql += " ORDER BY d.NgayDG DESC";
         
         try {
             PreparedStatement st = connection.prepareStatement(sql);
             int paramIndex = 1;
-            
-            // Nếu có keyword thì set tham số
             if (keyword != null && !keyword.trim().isEmpty()) {
                 String kw = "%" + keyword.trim() + "%";
-                st.setString(paramIndex++, kw);
-                st.setString(paramIndex++, kw);
-                st.setString(paramIndex++, kw);
+                st.setString(paramIndex++, kw); st.setString(paramIndex++, kw); st.setString(paramIndex++, kw);
             }
-            
             ResultSet rs = st.executeQuery();
             while (rs.next()) {
                 Review r = new Review();
                 r.setMaDG(rs.getInt("MaDG"));
                 r.setMaSP(rs.getString("MaSP"));
-                r.setEmailKhachHang(rs.getString("EmailKhachHang"));
+                r.setEmailKhachHang(rs.getString("EmailKhachHang")); // Vẫn chạy mượt mà
                 r.setTenKhachHang(rs.getString("TenKhachHang"));
                 r.setSoSao(rs.getInt("SoSao"));
                 r.setNoiDung(rs.getString("NoiDung"));
@@ -126,17 +109,13 @@ public class ReviewDAO extends DBContext {
                 r.setHinhAnh(rs.getString("HinhAnh"));
                 r.setVideo(rs.getString("Video"));
                 
-                // NẠP THÊM AVATAR CHO REVIEW
                 try { r.setAvatar(rs.getString("Avatar")); } catch (Exception ignored) {}
-                
                 try { r.setTenSP(rs.getString("TenSP")); } catch (Exception ignored) {}
                 try { r.setHinhAnhSP(rs.getString("HinhAnhSP")); } catch (Exception ignored) {}
                 
                 list.add(r);
             }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        } catch (Exception e) { e.printStackTrace(); }
         return list;
     }
 

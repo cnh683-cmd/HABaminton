@@ -91,11 +91,12 @@
                         <!-- Media Sửa Lỗi Path -->
                         <div class="rv-media">
                             <c:if test="${not empty rv.hinhAnh}">
-                                <img src="${pageContext.request.contextPath}/${rv.hinhAnh}" onerror="this.src='${rv.hinhAnh}'" onclick="openLightbox(this.src, 'image')">
+                                <img src="${pageContext.request.contextPath}/${rv.hinhAnh}" onerror="this.src='${rv.hinhAnh}'" onclick="openLightbox(this.src, 'image')" style="cursor: pointer;">
                             </c:if>
+
                             <c:if test="${not empty rv.video}">
-                                <div onclick="openLightbox('${pageContext.request.contextPath}/${rv.video}', 'video')">
-                                    <video src="${pageContext.request.contextPath}/${rv.video}"></video>
+                                <div onclick="openLightbox('${pageContext.request.contextPath}/${rv.video}', 'video')" style="display: inline-block; cursor: pointer; margin-left: 8px; vertical-align: top;">
+                                    <video src="${pageContext.request.contextPath}/${rv.video}" style="width: 60px; height: 60px; object-fit: cover; border-radius: 4px; border: 1px solid #e2e8f0; pointer-events: none;"></video>
                                 </div>
                             </c:if>
                         </div>
