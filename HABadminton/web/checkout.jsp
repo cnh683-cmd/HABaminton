@@ -304,9 +304,18 @@
         }
 
         const availableVouchers = [
-            { id: 'V1', code: 'HA200K', title: 'Giảm 200.000đ', minOrder: 0, discount: 200000, date: '31/12/2026' },
-            { id: 'V2', code: 'FREESHIP', title: 'Giảm 30.000đ (Phí Ship)', minOrder: 500000, discount: 30000, date: '15/10/2026' },
-            { id: 'V3', code: 'VIP500', title: 'Giảm 500.000đ', minOrder: 5000000, discount: 500000, date: '01/11/2026' }
+            <c:forEach items="${vouchers}" var="v" varStatus="loop">
+                {
+                    id: '${v.maVoucher}', 
+                    code: '${v.maVoucher}', 
+                    title: '${v.loaiGiam == 1 ? "Giảm ".concat(v.giaTriGiam).concat("%") : "Giảm ".concat(v.giaTriGiam).concat("đ")}', 
+                    minOrder: ${v.donToiThieu}, 
+                    discount: ${v.loaiGiam == 1 ? v.giaTriGiam : v.giaTriGiam}, // Xử lý discount % ở bước tính toán sau
+                    isPercent: ${v.loaiGiam == 1},
+                    maxDiscount: ${v.giamToiDa != null ? v.giamToiDa : 0},
+                    date: '<fmt:formatDate value="${v.ngayKetThuc}" pattern="dd/MM/yyyy"/>'
+                }${!loop.last ? ',' : ''}
+            </c:forEach>
         ];
 
         let selectedVoucherTemp = null;
@@ -357,7 +366,15 @@
 
         function confirmVoucher() {
             if(selectedVoucherTemp) {
-                appliedDiscount = selectedVoucherTemp.discount;
+                if(selectedVoucherTemp.isPercent) {
+                    appliedDiscount = (subTotal * selectedVoucherTemp.discount) / 100;
+                    if(selectedVoucherTemp.maxDiscount > 0 && appliedDiscount > selectedVoucherTemp.maxDiscount) {
+                        appliedDiscount = selectedVoucherTemp.maxDiscount;
+                    }
+                } else {
+                    appliedDiscount = selectedVoucherTemp.discount;
+                }
+                
                 document.getElementById('selectedVoucherText').innerText = `Đã áp dụng: \${selectedVoucherTemp.code}`;
                 document.getElementById('selectedVoucherText').style.color = '#ff6600';
             }

@@ -31,6 +31,13 @@
             </a>
         </li>
         
+        <!-- BỔ SUNG QUẢN LÝ VOUCHER -->
+        <li>
+            <a href="${pageContext.request.contextPath}/admin-vouchers" class="${param.active == 'vouchers' ? 'active' : ''}">
+                <i class="fa-solid fa-ticket-simple"></i> Quản lý voucher
+            </a>
+        </li>
+        
         <!-- NÚT ĐĂNG XUẤT -->
         <li style="margin-top: auto;">
             <a href="${pageContext.request.contextPath}/logoutServlet" style="color: #dc3545; border-top: 1px solid var(--border-dark);">

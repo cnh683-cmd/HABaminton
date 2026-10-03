@@ -274,7 +274,7 @@
                 let qty = qtyElement ? qtyElement.value : 1;
                 let buyNowItem = [{ id: id, name: name, price: price, image: image, quantity: parseInt(qty) }];
                 sessionStorage.setItem('habadminton_buynow', JSON.stringify(buyNowItem));
-                window.location.href = "checkout.jsp?buynow=true";
+                window.location.href = "checkout?buynow=true";
             }
 
             function changeImage(element) {

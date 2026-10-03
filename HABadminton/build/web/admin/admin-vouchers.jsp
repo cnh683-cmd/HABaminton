@@ -9,7 +9,7 @@
     <meta charset="UTF-8">
     <title>Quản lý Giảm giá - Admin</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/admin-main.css?v=2">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/admin-style.css">
     <style>
         .data-thead, .data-row { grid-template-columns: 2.1fr 1.6fr 1.1fr 1.3fr 1.5fr 1.2fr 1.4fr; }
     </style>

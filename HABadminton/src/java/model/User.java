@@ -9,6 +9,10 @@ public class User {
     private String tinhThanh;
     private int role;
     private String avatar;
+    private int trangThai = 1;      // 1: hoạt động, 0: bị khóa
+    private java.util.Date ngayTao;
+    private int soDonHang;          // Thống kê cho trang quản lý tài khoản
+    private long tongChiTieu;
 
     public User() {
     }
@@ -43,4 +47,13 @@ public class User {
     public void setAvatar(String avatar) {
         this.avatar = avatar;
     }
+
+    public int getTrangThai() { return trangThai; }
+    public void setTrangThai(int trangThai) { this.trangThai = trangThai; }
+    public java.util.Date getNgayTao() { return ngayTao; }
+    public void setNgayTao(java.util.Date ngayTao) { this.ngayTao = ngayTao; }
+    public int getSoDonHang() { return soDonHang; }
+    public void setSoDonHang(int soDonHang) { this.soDonHang = soDonHang; }
+    public long getTongChiTieu() { return tongChiTieu; }
+    public void setTongChiTieu(long tongChiTieu) { this.tongChiTieu = tongChiTieu; }
 }

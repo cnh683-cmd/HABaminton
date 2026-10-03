@@ -10,7 +10,7 @@
     <meta charset="UTF-8">
     <title>Thống kê - Admin</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/admin-main.css?v=2">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/admin-style.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
     <style>
         .dash-grid-3 { display: grid; grid-template-columns: 1fr 1fr 1.2fr; gap: 20px; margin-bottom: 20px; }

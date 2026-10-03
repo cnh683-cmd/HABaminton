@@ -50,6 +50,8 @@
             <file>file:/D:/netbeans/NetBeansProjects/BaiTapLonJava/HABadminton/src/java/controller/Admin/AdminReviewServlet.java</file>
             <file>file:/D:/netbeans/NetBeansProjects/BaiTapLonJava/HABadminton/web/css/style.css</file>
             <file>file:/D:/netbeans/NetBeansProjects/BaiTapLonJava/HABadminton/src/java/dal/DashboardDAO.java</file>
+            <file>file:/D:/netbeans/NetBeansProjects/BaiTapLonJava/HABadminton/src/java/controller/Admin/DashboardServlet.java</file>
+            <file>file:/D:/netbeans/NetBeansProjects/BaiTapLonJava/HABadminton/src/java/controller/User/CheckoutServlet.java</file>
         </group>
     </open-files>
 </project-private>

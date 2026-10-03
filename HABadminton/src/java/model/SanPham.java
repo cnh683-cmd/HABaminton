@@ -14,6 +14,9 @@ public class SanPham {
     private String moTa;
     private String xuatXu;
     private String thongSo;
+    private int soLuong;      // Tồn kho
+    private int trangThai = 1; // 1: đang bán, 0: ngừng bán
+    private int daBan;        // Số lượng đã bán (dùng cho thống kê/quản lý)
 
     public SanPham() {
     }
@@ -87,4 +90,19 @@ public class SanPham {
 
     public String getThongSo() { return thongSo; }
     public void setThongSo(String thongSo) { this.thongSo = thongSo; }
+
+    public int getSoLuong() { return soLuong; }
+    public void setSoLuong(int soLuong) { this.soLuong = soLuong; }
+
+    public int getTrangThai() { return trangThai; }
+    public void setTrangThai(int trangThai) { this.trangThai = trangThai; }
+
+    public int getDaBan() { return daBan; }
+    public void setDaBan(int daBan) { this.daBan = daBan; }
+
+    /** % giảm so với giá gốc (0 nếu không giảm) */
+    public int getPhanTramGiam() {
+        if (giaGoc <= 0 || giaBan >= giaGoc) return 0;
+        return (int) Math.round((giaGoc - giaBan) * 100 / giaGoc);
+    }
 }

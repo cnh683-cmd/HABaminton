@@ -219,7 +219,7 @@
                     <span class="total-price" id="cartTotalAmount">0đ</span>
                 </div>
                 <div class="cart-buttons">
-                    <a href="checkout.jsp" class="btn-solid">Đặt mua</a>
+                    <a href="checkout" class="btn-solid">Đặt mua</a>
                 </div>
             </div>
         </div>

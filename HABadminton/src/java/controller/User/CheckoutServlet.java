@@ -10,10 +10,7 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
-/**
- * Mở trang thanh toán, nạp danh sách voucher đang áp dụng từ CSDL
- * (trước đây danh sách voucher bị viết cứng trong checkout.jsp).
- */
+
 @WebServlet(name = "CheckoutServlet", urlPatterns = {"/checkout"})
 public class CheckoutServlet extends HttpServlet {
 
