@@ -52,6 +52,11 @@
             <file>file:/D:/netbeans/NetBeansProjects/BaiTapLonJava/HABadminton/src/java/dal/DashboardDAO.java</file>
             <file>file:/D:/netbeans/NetBeansProjects/BaiTapLonJava/HABadminton/src/java/controller/Admin/DashboardServlet.java</file>
             <file>file:/D:/netbeans/NetBeansProjects/BaiTapLonJava/HABadminton/src/java/controller/User/CheckoutServlet.java</file>
+            <file>file:/D:/netbeans/NetBeansProjects/BaiTapLonJava/HABadminton/web/admin/admin-dashboard.jsp</file>
+            <file>file:/D:/netbeans/NetBeansProjects/BaiTapLonJava/HABadminton/web/admin/admin-products.jsp</file>
+            <file>file:/D:/netbeans/NetBeansProjects/BaiTapLonJava/HABadminton/web/admin/admin-users.jsp</file>
+            <file>file:/D:/netbeans/NetBeansProjects/BaiTapLonJava/HABadminton/web/admin/admin-vouchers.jsp</file>
+            <file>file:/D:/netbeans/NetBeansProjects/BaiTapLonJava/HABadminton/src/java/dal/VoucherDAO.java</file>
         </group>
     </open-files>
 </project-private>

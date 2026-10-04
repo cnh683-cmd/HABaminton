@@ -375,4 +375,17 @@ public class SanPhamDAO extends DBContext {
         }
         return map;
     }
+    
+    /** Hoàn lại tồn kho khi đơn hàng bị hủy */
+    public void increaseStock(String maSP, int qty) {
+        String sql = "UPDATE SANPHAM SET SoLuong = SoLuong + ? WHERE MaSP = TRY_CAST(? AS INT)";
+        try {
+            PreparedStatement st = connection.prepareStatement(sql);
+            st.setInt(1, qty);
+            st.setString(2, maSP);
+            st.executeUpdate();
+        } catch (Exception e) {
+            System.out.println("Lỗi increaseStock: " + e.getMessage());
+        }
+    }
 }

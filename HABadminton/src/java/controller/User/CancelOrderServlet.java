@@ -21,7 +21,7 @@ public class CancelOrderServlet extends HttpServlet {
         
         if (id != null && reason != null) {
             OrderDAO dao = new OrderDAO();
-            dao.cancelOrder(id, reason);
+            dao.cancelOrder(id, reason); // Hàm này giờ đã tự động lo cả việc hoàn kho và voucher!
         }
         
         if ("admin".equals(from)) {

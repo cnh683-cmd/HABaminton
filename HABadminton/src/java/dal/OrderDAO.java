@@ -176,8 +176,14 @@ public class OrderDAO extends DBContext {
     }
     
     public boolean updateOrderStatus(String maDonHang, int trangThai) {
-        String sql = "";
+        // 1. LẤY TRẠNG THÁI CŨ CỦA ĐƠN HÀNG TRƯỚC KHI CẬP NHẬT
+        Order order = getOrderById(maDonHang);
+        if (order == null) return false;
         
+        int oldStatus = order.getTrangThai();
+        
+        // 2. TẠO CÂU LỆNH CẬP NHẬT TRẠNG THÁI MỚI
+        String sql = "";
         switch (trangThai) {
             case 2: // Đang giao
                 sql = "UPDATE DonHang SET TrangThai = ?, NgayTiepNhan = GETDATE(), UserDaXem = 0 WHERE MaDonHang = ?";
@@ -198,6 +204,36 @@ public class OrderDAO extends DBContext {
             st.setInt(1, trangThai);
             st.setString(2, maDonHang);
             int row = st.executeUpdate();
+            
+            // 3. KIỂM TRA LOGIC KHÔI PHỤC ĐƠN HÀNG
+            // Nếu trạng thái cũ là 0 (Đã hủy) VÀ trạng thái mới > 0 (Khôi phục lại)
+            if (row > 0 && oldStatus == 0 && trangThai > 0) {
+                
+                // --- Trừ lại tồn kho sản phẩm ---
+                if (order.getChiTietList() != null) {
+                    SanPhamDAO spDao = new SanPhamDAO();
+                    for (OrderDetail item : order.getChiTietList()) {
+                        try {
+                            if (item.getMaSP() != null) {
+                                spDao.decreaseStock(item.getMaSP(), item.getSoLuong());
+                            }
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }
+
+                // --- Tăng lại lượt dùng voucher ---
+                if (order.getMaVoucher() != null && !order.getMaVoucher().trim().isEmpty()) {
+                    new VoucherDAO().increaseVoucherUsage(order.getMaVoucher());
+                }
+                
+                // --- Xóa "Lý do hủy" vì đơn đã được khôi phục ---
+                PreparedStatement stClear = connection.prepareStatement("UPDATE DonHang SET LyDoHuy = NULL WHERE MaDonHang = ?");
+                stClear.setString(1, maDonHang);
+                stClear.executeUpdate();
+            }
+            
             return row > 0;
         } catch (Exception e) {
             e.printStackTrace();
@@ -274,12 +310,38 @@ public class OrderDAO extends DBContext {
     }
 
     public void cancelOrder(String maDonHang, String lyDoHuy) {
+        // 1. LẤY THÔNG TIN ĐƠN HÀNG TRƯỚC KHI HỦY ĐỂ BIẾT SẢN PHẨM & VOUCHER
+        Order order = getOrderById(maDonHang);
+
+        // 2. THỰC HIỆN CẬP NHẬT TRẠNG THÁI HỦY TRONG CSDL
         String sql = "UPDATE DonHang SET TrangThai = 0, LyDoHuy = ?, UserDaXem = 0 WHERE MaDonHang = ?";
         try {
             PreparedStatement st = connection.prepareStatement(sql);
             st.setString(1, lyDoHuy);
             st.setString(2, maDonHang);
             st.executeUpdate();
+
+            // 3. TỰ ĐỘNG HOÀN TRẢ KHO VÀ VOUCHER NẾU ĐƠN TỒN TẠI
+            if (order != null) {
+                // --- Hoàn lại tồn kho sản phẩm ---
+                if (order.getChiTietList() != null) {
+                    SanPhamDAO spDao = new SanPhamDAO();
+                    for (OrderDetail item : order.getChiTietList()) {
+                        try {
+                            if (item.getMaSP() != null) {
+                                spDao.increaseStock(item.getMaSP(), item.getSoLuong());
+                            }
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }
+
+                // --- Hoàn lại lượt dùng voucher ---
+                if (order.getMaVoucher() != null && !order.getMaVoucher().trim().isEmpty()) {
+                    new VoucherDAO().decreaseVoucherUsage(order.getMaVoucher());
+                }
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }

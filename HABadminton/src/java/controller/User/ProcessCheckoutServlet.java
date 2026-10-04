@@ -107,6 +107,23 @@ public class ProcessCheckoutServlet extends HttpServlet {
         OrderDAO dao = new OrderDAO();
         dao.insertOrder(order);
         
+        // --- 1. TRỪ SỐ LƯỢNG TỒN KHO SẢN PHẨM ---
+        if (productIds != null && productQtys != null) {
+            dal.SanPhamDAO spDao = new dal.SanPhamDAO();
+            for (int i = 0; i < productIds.length; i++) {
+                try {
+                    spDao.decreaseStock(productIds[i], Integer.parseInt(productQtys[i]));
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+
+        // --- 2. TĂNG LƯỢT SỬ DỤNG VOUCHER ---
+        if (voucherCode != null && !voucherCode.trim().isEmpty()) {
+            new dal.VoucherDAO().increaseVoucherUsage(voucherCode);
+        }
+        
         request.setAttribute("isSuccess", true);
         request.setAttribute("order", order);
         request.getRequestDispatcher("payment-result.jsp").forward(request, response);

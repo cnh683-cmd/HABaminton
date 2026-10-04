@@ -28,21 +28,33 @@ public class MoMoReturnServlet extends HttpServlet {
                 OrderDAO dao = new OrderDAO();
                 dao.insertOrder(pendingOrder);
                 
+                // --- 1. TRỪ SỐ LƯỢNG TỒN KHO SẢN PHẨM ---
+                if (pendingOrder.getChiTietList() != null) {
+                    dal.SanPhamDAO spDao = new dal.SanPhamDAO();
+                    for (model.OrderDetail item : pendingOrder.getChiTietList()) {
+                        try {
+                            if (item.getMaSP() != null) {
+                                spDao.decreaseStock(item.getMaSP(), item.getSoLuong());
+                            }
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }
+
+                // --- 2. TĂNG LƯỢT SỬ DỤNG VOUCHER ---
+                if (pendingOrder.getMaVoucher() != null && !pendingOrder.getMaVoucher().trim().isEmpty()) {
+                    new dal.VoucherDAO().increaseVoucherUsage(pendingOrder.getMaVoucher());
+                }
+                
                 request.setAttribute("isSuccess", true); 
                 request.setAttribute("success_string", "true");
             } else {
-                System.out.println(">>> ĐÃ VÀO NHÁNH THẤT BẠI");
-                pendingOrder.setTrangThai(1); 
-                request.setAttribute("isSuccess", false); 
-            }
-            
-            request.setAttribute("order", pendingOrder);
-            request.getSession().removeAttribute("pendingOrder");
-        } else {
             System.out.println(">>> LỖI: KHÔNG TÌM THẤY PENDING ORDER TRONG SESSION");
             request.setAttribute("isSuccess", false);
         }
         
         request.getRequestDispatcher("payment-result.jsp").forward(request, response);
     }
+}
 }

@@ -286,4 +286,27 @@ public class VoucherDAO extends DBContext {
         }
         return 0;
     }
+    
+    public void increaseVoucherUsage(String code) {
+        String sql = "UPDATE VOUCHER SET DaSuDung = DaSuDung + 1 WHERE MaVoucher = ?";
+        try {
+            PreparedStatement st = connection.prepareStatement(sql);
+            st.setString(1, code);
+            st.executeUpdate();
+        } catch (Exception e) {
+            System.out.println("Lỗi tăng lượt dùng voucher: " + e.getMessage());
+        }
+    }
+    
+    /** Hoàn lại lượt dùng voucher khi đơn hàng bị hủy (không để số âm) */
+    public void decreaseVoucherUsage(String code) {
+        String sql = "UPDATE VOUCHER SET DaSuDung = CASE WHEN DaSuDung - 1 < 0 THEN 0 ELSE DaSuDung - 1 END WHERE MaVoucher = ?";
+        try {
+            PreparedStatement st = connection.prepareStatement(sql);
+            st.setString(1, code);
+            st.executeUpdate();
+        } catch (Exception e) {
+            System.out.println("Lỗi hoàn lượt dùng voucher: " + e.getMessage());
+        }
+    }
 }
